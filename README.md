@@ -3,7 +3,7 @@ rmh-elfeed-org
 
   Configure the Elfeed RSS reader with an Orgmode file
 
-# PROBLEM
+# Problem
 
 Maintaining tags for all my rss feeds is cumbersome using the regular flat list
 where there is no hierarchy and tag names are duplicated a lot. For example
@@ -23,7 +23,7 @@ this is how elfeed users typically configure their subscriptions.
         ("http://www.anticscomic.com/?feed=rss2" comic)
         ("http://feeds.feedburner.com/blogspot/TPQSS" blog dev)))
 
-# SOLUTION
+# Solution
 
 Org-mode makes the book keeping of tags and feeds much easier. Tags get
 inherited from parent headlines so there is no need to specify tags for each
@@ -52,6 +52,7 @@ and every feed.
           * http://feeds.feedburner.com/eclipselive
           * http://www.fosslc.org/drupal/rss.xml                           :video:
 
+
 A few tips for the org-mode feed configuration:
 
 -   The tree must have an ID property
@@ -62,7 +63,7 @@ A few tips for the org-mode feed configuration:
 
 -   Everything else in the tree is ignored.
 
-# USAGE
+# Usage
 
 In your initialization script add the following:
 
