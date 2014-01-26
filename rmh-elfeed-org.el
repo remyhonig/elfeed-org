@@ -15,8 +15,7 @@
       (move-marker m nil)
       (remove-if-not
        (lambda (x)
-         (and (string-match match (car x))
-              x))
+         (and (string-match match (car x)) x))
        (rmh-elfeed-org-tags-inherited
         (lambda ()
           (org-map-entries
