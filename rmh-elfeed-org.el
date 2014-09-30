@@ -11,18 +11,21 @@
   "Convert an org tree into an Elfeed RSS feeds configuration compatible structure. Filter out headlines that contain MATCH"
   (let ((m (org-id-find tree-id 'marker)))
     (save-excursion
-      (goto-char m)
-      (move-marker m nil)
-      (remove-if-not
-       (lambda (x)
-         (and (string-match match (car x)) x))
-       (rmh-elfeed-org-tags-inherited
-        (lambda ()
-          (org-map-entries
-           '(let ((url (substring-no-properties (org-get-heading t)))
-                  (tags (mapcar 'intern (org-get-tags-at))))
-              (append (list url) tags))
-           nil rmh-elfeed-org-files)))))))
+      (with-current-buffer
+	  (marker-buffer m)
+	(progn
+	  (goto-char m)
+	  (move-marker m nil)
+	  (remove-if-not
+	   (lambda (x)
+	     (and (string-match match (car x)) x))
+	   (rmh-elfeed-org-tags-inherited
+	    (lambda ()
+	      (org-map-entries
+	       '(let ((url (substring-no-properties (org-get-heading t)))
+		      (tags (mapcar 'intern (org-get-tags-at))))
+		  (append (list url) tags))
+	       nil rmh-elfeed-org-files)))))))))
 
 (defun rmh-elfeed-org-tags-inherited (func)
   "Call FUNC while ensuring tags are inherited"
