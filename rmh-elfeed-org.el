@@ -11,6 +11,7 @@
   "Convert an org tree into an Elfeed RSS feeds configuration compatible structure. Filter out headlines that contain MATCH"
   (let ((m (org-id-find tree-id 'marker)))
     (save-excursion
+      (set-buffer (marker-buffer m))
       (with-current-buffer
 	  (marker-buffer m)
 	(progn
