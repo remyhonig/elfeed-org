@@ -29,7 +29,7 @@ Org-mode makes the book keeping of tags and feeds much easier. Tags get
 inherited from parent headlines so there is no need to specify tags for each
 and every feed.
 
-    * Technolog                                                             :tech:
+    * Technology                                                            :tech:
      :PROPERTIES:
      :ID: elfeed
      :END:
@@ -68,7 +68,7 @@ A few tips for the org-mode feed configuration:
 In your initialization script add the following:
 
     ;; Load this extension.
-    (load "~/Development/rmh-elfeed-org/rmh-elfeed-org.el")
+    (load "~/.emacs.d/lisp/rmh-elfeed-org.el")
     
     ;; Elfeed.org contains the feed subscriptions.
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
