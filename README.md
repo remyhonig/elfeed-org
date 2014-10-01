@@ -1,4 +1,4 @@
-rmh-elfeed-org
+elfeed-org
 ==============
 
   Configure the Elfeed RSS reader with an Orgmode file
@@ -63,17 +63,37 @@ A few tips for the org-mode feed configuration:
 
 -   Everything else in the tree is ignored.
 
-# Usage
+# Installation
+
+## Manual
+
+Download elfeed-org
+
+    cd ~/.emacs.d/lisp
+    wget https://github.com/remyhonig/rmh-elfeed-org/blob/master/elfeed-org.el
+
+Install the package in Emacs
+
+    C-x C-f ~/.emacs.d/lisp/elfeed-org.el
+    M-x package-install-from-buffer <ENTER>
 
 In your initialization script add the following:
 
-    ;; Load this extension.
-    (load "~/.emacs.d/lisp/rmh-elfeed-org.el")
-    
-    ;; Elfeed.org contains the feed subscriptions.
+    ;; Load elfeed-org
+    ;; This hooks up elfeed-org to read the configuration when elfeed
+    ;; is started with =M-x elfeed=
+    (require 'elfeed-org)
+
+    ;; Optionally specify a number of files containing elfeed
+    ;; configuration. If not set then the location below is used.
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
-    
-    ;; Use an advice to load the configuration.
-    (defadvice elfeed (before configure-elfeed activate)
-      "Load all feed settings before elfeed is started."
-      (rmh-elfeed-org-configure))
+
+# Through MELPA
+
+Note: My pull request to MELPA is not yet accepted. In the future this
+should work. I'm not sure if `(require 'elfeed-org)` is required to
+load this package yet.
+
+    ;; Install through package manager
+    M-x package-install <ENTER>
+    elfeed-org
