@@ -55,13 +55,10 @@ and every feed.
 
 A few tips for the org-mode feed configuration:
 
--   The tree must have an ID property
-
--   Feeds must start with "http"
-
--   Tag rules must start with "entry-title: "
-
--   Everything else in the tree is ignored.
+* The tree must have an ID property
+* Feeds must start with "http"
+* Tag rules must start with "entry-title: "
+* Everything else in the tree is ignored.
 
 # Installation
 
