@@ -85,7 +85,7 @@ In your initialization script add the following:
     ;; configuration. If not set then the location below is used.
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
 
-# Through MELPA
+## Through MELPA
 
 Note: My pull request to MELPA is not yet accepted. In the future this
 should work. I'm not sure if `(require 'elfeed-org)` is required to
