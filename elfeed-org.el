@@ -4,7 +4,7 @@
 
 ;; Author           : Remy Honig <remyhonig@gmail.com>
 ;; Package-Requires : ((elfeed "1.1.1") (org "7"))
-;; URL              : https://github.com/remyhonig/rmh-elfeed-org
+;; URL              : https://github.com/remyhonig/elfeed-org
 ;; Version          : 20141001.1
 ;; Keywords         : news
 
@@ -25,7 +25,7 @@
 ;; Maintaining tags for all my rss feeds is cumbersome using the
 ;; regular flat list where there is no hierarchy and tag names are
 ;; duplicated a lot.
-;; Org-mode makes the book keeping of tags and feeds much easier. Tags
+;; Org-mode makes the book keeping of tags and feeds much easier.  Tags
 ;; get inherited from parent headlines so there is no need to specify
 ;; tags for each and every feed.
 
@@ -109,7 +109,6 @@ Filter out headlines that contain MATCH."
   (defadvice elfeed (before configure-elfeed activate)
     "Load all feed settings before elfeed is started."
     (rmh-elfeed-org-configure)))
-
 
 (provide 'elfeed-org)
 ;;; elfeed-org.el ends here
