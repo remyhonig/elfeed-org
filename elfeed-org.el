@@ -39,7 +39,7 @@
   "The ID property of the tree containing the RSS feeds.")
 
 (defvar rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
-  "The files where we look to find the tree with the rmh-elfeed-org-tree-id.")
+  "The files where we look to find the tree with the `rmh-elfeed-org-tree-id'.")
 
 (defun rmh-elfeed-org-read-tree (tree-id match)
   "Convert org tree with TREE-ID into a feed configuration structure for Elfeed.
