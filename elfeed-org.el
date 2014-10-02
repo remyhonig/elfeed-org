@@ -1,9 +1,9 @@
-;;; elfeed-org.el --- Configure the Elfeed RSS reader with an Orgmode file -*- lexical-binding: t; -*-
+;;; elfeed-org.el --- Configure the Elfeed RSS reader with an Orgmode file
 
 ;; Copyright (C) 2014  Remy Honig
 
 ;; Author           : Remy Honig <remyhonig@gmail.com>
-;; Package-Requires : ((elfeed "0.0")(cl "0.0")(org "0.0"))
+;; Package-Requires : ((elfeed "1.1.1") (org "7"))
 ;; URL              : https://github.com/remyhonig/rmh-elfeed-org
 ;; Version          : 20141001.1
 ;; Keywords         : news
@@ -36,16 +36,17 @@
 (require 'org)
 
 (defvar rmh-elfeed-org-tree-id "elfeed"
-  "The ID property of the tree containing the RSS feeds")
+  "The ID property of the tree containing the RSS feeds.")
 
 (defvar rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
-  "The files where we look for to find the tree with the rmh-elfeed-org-tree-id")
+  "The files where we look to find the tree with the rmh-elfeed-org-tree-id.")
 
 (defun rmh-elfeed-org-read-tree (tree-id match)
-  "Convert an org tree into an Elfeed RSS feeds configuration compatible structure. Filter out headlines that contain MATCH"
-  (let*((m (org-id-find tree-id 'marker))
-        (buf (marker-buffer m))
-        (filename (buffer-file-name buf)))
+  "Convert org tree with TREE-ID into a feed configuration structure for Elfeed.
+Filter out headlines that contain MATCH."
+  (let* ((m (org-id-find tree-id 'marker))
+         (buf (marker-buffer m))
+         (filename (buffer-file-name buf)))
     (save-excursion
       (find-file filename)
       (message "elfeed-org loaded configuration from '%s'" filename)
@@ -65,47 +66,50 @@
                nil rmh-elfeed-org-files)))))))))
 
 (defun rmh-elfeed-org-tags-inherited (func)
-  "Call FUNC while ensuring tags are inherited"
+  "Call FUNC while ensuring tags are inherited."
   (let ((original org-use-tag-inheritance))
     (progn (setq org-use-tag-inheritance 't)
            (let ((feeds (funcall func)))
              (setq org-use-tag-inheritance original) feeds))))
 
 (defun rmh-elfeed-org-add-new-entry-hooks (keywords)
-  "Add new entry hooks for tagging keywords"
+  "Add new entry hooks for tagging KEYWORDS."
   (mapcar
    (lambda (x)
      (progn
-       (let* ((term (car (cdr (split-string (car x) ": ")))) (tags (cdr x)))
-         (add-hook 'elfeed-new-entry-hook (elfeed-make-tagger :entry-title term :add (cdr x)))))) keywords))
+       (let ((term (car (cdr (split-string (car x) ": "))))
+             (tags (cdr x)))
+         (add-hook 'elfeed-new-entry-hook (elfeed-make-tagger :entry-title term :add (cdr x))))))
+   keywords))
 
 (defun rmh-elfeed-org-check-configuration-file (file)
-  "Make sure FILE exists. If not, ask user what to do."
+  "Make sure FILE exists.  If not, ask user what to do."
   (when (not (file-exists-p file))
     (error "rmh-elfeed-org cannot open %s. Make sure it exists or set the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))
     ))
 
 (defun rmh-elfeed-org-configure ()
-  "Clear and reload the Elfeed feeds- and tagging configuration"
+  "Clear and reload the Elfeed feeds- and tagging configuration."
   (interactive)
-  (progn (mapcar (lambda (file) (rmh-elfeed-org-check-configuration-file file)) rmh-elfeed-org-files)
-         (let ((keywords (rmh-elfeed-org-read-tree rmh-elfeed-org-tree-id "entry-title"))
-               (feeds (rmh-elfeed-org-read-tree rmh-elfeed-org-tree-id "http")))
-           (progn
-             (setq elfeed-new-entry-hook nil)
-             (setq elfeed-feeds feeds)
-             (rmh-elfeed-org-add-new-entry-hooks keywords)))))
+  (mapc (lambda (file) (rmh-elfeed-org-check-configuration-file file)) rmh-elfeed-org-files)
+  (let ((keywords (rmh-elfeed-org-read-tree rmh-elfeed-org-tree-id "entry-title"))
+        (feeds (rmh-elfeed-org-read-tree rmh-elfeed-org-tree-id "http")))
+    (progn
+      (setq elfeed-new-entry-hook nil)
+      (setq elfeed-feeds feeds)
+      (rmh-elfeed-org-add-new-entry-hooks keywords))))
 
+;;;###autoload
 (defun elfeed-org ()
-  "Hookup rmh-elfeed-org to read the org-mode configuration when elfeed starts"
+  "Hook up rmh-elfeed-org to read the `org-mode' configuration when elfeed starts."
   (interactive)
-  (message "elfeed-org setup to handle elfeed configuration")
+  (message "elfeed-org is set up to handle elfeed configuration.")
   ;; Use an advice to load the configuration.
   (defadvice elfeed (before configure-elfeed activate)
     "Load all feed settings before elfeed is started."
     (rmh-elfeed-org-configure)))
 
-(elfeed-org)
+
 (provide 'elfeed-org)
 ;;; elfeed-org.el ends here
