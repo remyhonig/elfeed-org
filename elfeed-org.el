@@ -28,7 +28,7 @@
 ;; easier. Tags get inherited from parent headlines. Multiple files
 ;; can be specified to separate your private from your work feeds for
 ;; example. You may also use tagging rules to tag feeds by entry-title
-;; keywords.
+;; keywords. See https://github.com/remyhonig/elfeed-org for usage.
 
 ;;; Code:
 
