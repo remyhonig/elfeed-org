@@ -62,6 +62,12 @@ A few tips for the org-mode feed configuration:
 
 # Installation
 
+## Through MELPA
+
+    ;; Install through package manager
+    M-x package-install <ENTER>
+    elfeed-org
+
 ## Manual
 
 Download elfeed-org
@@ -74,6 +80,8 @@ Install the package in Emacs
     C-x C-f ~/.emacs.d/lisp/elfeed-org.el
     M-x package-install-from-buffer <ENTER>
 
+# Initialization
+
 In your initialization script add the following:
 
     ;; Load elfeed-org
@@ -85,12 +93,3 @@ In your initialization script add the following:
     ;; configuration. If not set then the location below is used.
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
 
-## Through MELPA
-
-Note: My pull request to MELPA is not yet accepted. In the future this
-should work. I'm not sure if `(require 'elfeed-org)` is required to
-load this package yet.
-
-    ;; Install through package manager
-    M-x package-install <ENTER>
-    elfeed-org
