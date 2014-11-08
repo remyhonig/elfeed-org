@@ -29,7 +29,7 @@ Org-mode makes the book keeping of tags and feeds much easier. Tags get
 inherited from parent headlines so there is no need to specify tags for each
 and every feed.
 
-    * Technology                                                            :tech:
+    * Blogs
      :PROPERTIES:
      :ID: elfeed
      :END:
@@ -52,6 +52,7 @@ and every feed.
           * http://feeds.feedburner.com/eclipselive
           * http://www.fosslc.org/drupal/rss.xml                           :video:
 
+Note that I hide leading stars ```(setq org-hide-leading-stars t)``` in the above example. So if you copy paste this example configuration verbatim it will not work.
 
 # Tips
 A few tips for the org-mode feed configuration:
@@ -89,11 +90,11 @@ Install the package in Emacs
 In your initialization script add the following:
 
     ;; Load elfeed-org
-    ;; This hooks up elfeed-org to read the configuration when elfeed
-    ;; is started with =M-x elfeed=
     (require 'elfeed-org)
 
     ;; Initialize elfeed-org
+    ;; This hooks up elfeed-org to read the configuration when elfeed
+    ;; is started with =M-x elfeed=
     (elfeed-org)
 
     ;; Optionally specify a number of files containing elfeed
