@@ -79,7 +79,7 @@ A few tips for the org-mode feed configuration:
 Download elfeed-org
 
     cd ~/.emacs.d/lisp
-    wget https://github.com/remyhonig/rmh-elfeed-org/blob/master/elfeed-org.el
+    wget https://github.com/remyhonig/elfeed-org/blob/master/elfeed-org.el
 
 Install the package in Emacs
 
