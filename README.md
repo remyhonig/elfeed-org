@@ -68,6 +68,7 @@ A few tips for the org-mode feed configuration:
 # Installation
 
 ## Through MELPA
+[![MELPA](http://melpa.org/packages/elfeed-org-badge.svg)](http://melpa.org/#/elfeed-org)
 
     ;; Install through package manager
     M-x package-install <ENTER>
