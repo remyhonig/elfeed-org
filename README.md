@@ -33,26 +33,25 @@ and every feed.
      :PROPERTIES:
      :ID: elfeed
      :END:
-      * entry-title: \(linux\|linus\|ubuntu\|kde\|gnome\)                  :linux:
-      * http://git-annex.branchable.com/design/assistant/blog/index.rss :mustread:
-      * http://feeds.feedburner.com/InformationIsBeautiful
-      * Software Development                                                 :dev:
-        * Emacs                                                   :emacs:mustread:
-          * http://www.terminally-incoherent.com/blog/feed
-          * http://nullprogram.com/feed
-          * entry-title: \(emacs\|org-mode\)
-          * http://planet.emacsen.org/atom.xml
-        * Web Development                                                    :web:
-          * http://planet.phpunit.de/atom.xml
-          * http://feeds.feedburner.com/symfony/blog
-          * http://feeds.feedburner.com/qooxdoo/blog/content
-        * Eclipse                                                        :eclipse:
-          * http://blog.eclipse-tips.com/feeds/posts/default?alt=rss
-          * http://ed-merks.blogspot.com/feeds/posts/default
-          * http://feeds.feedburner.com/eclipselive
-          * http://www.fosslc.org/drupal/rss.xml                           :video:
+    ** entry-title: \(linux\|linus\|ubuntu\|kde\|gnome\)                  :linux:
+    ** http://git-annex.branchable.com/design/assistant/blog/index.rss :mustread:
+    ** http://feeds.feedburner.com/InformationIsBeautiful
+    ** Software Development                                                 :dev:
+    *** Emacs                                                    :emacs:mustread:
+    **** http://www.terminally-incoherent.com/blog/feed
+    **** http://nullprogram.com/feed
+    **** entry-title: \(emacs\|org-mode\)
+    **** http://planet.emacsen.org/atom.xml
+    *** Web Development                                                     :web:
+    **** http://planet.phpunit.de/atom.xml
+    **** http://feeds.feedburner.com/symfony/blog
+    **** http://feeds.feedburner.com/qooxdoo/blog/content
+    *** Eclipse                                                         :eclipse:
+    **** http://blog.eclipse-tips.com/feeds/posts/default?alt=rss
+    **** http://ed-merks.blogspot.com/feeds/posts/default
+    **** http://feeds.feedburner.com/eclipselive
+    **** http://www.fosslc.org/drupal/rss.xml                             :video:
 
-Note that I hide leading stars ```(setq org-hide-leading-stars t)``` in the above example. So if you copy paste this example configuration verbatim it will not work.
 
 # Tips
 A few tips for the org-mode feed configuration:
