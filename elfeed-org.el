@@ -37,12 +37,21 @@
 (require 'org)
 
 
-(defvar rmh-elfeed-org-tree-id "elfeed"
-  "The ID property of the tree containing the RSS feeds.")
+(defgroup elfeed-org nil
+  "Configure the Elfeed RSS reader with an Orgmode file"
+  :group 'comm)
 
 
-(defvar rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
-  "The files where we look to find the tree with the `rmh-elfeed-org-tree-id'.")
+(defcustom rmh-elfeed-org-tree-id "elfeed"
+  "The ID property of the tree containing the RSS feeds."
+  :group 'elfeed-org
+  :type 'string)
+
+
+(defcustom rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
+  "The files where we look to find the tree with the `rmh-elfeed-org-tree-id'."
+  :group 'elfeed-org
+  :type '(repeat (file :tag "org-mode file")))
 
 
 (defun rmh-elfeed-org-read-tree (tree-id match)
@@ -88,7 +97,7 @@ Filter out headlines that contain MATCH."
 (defun rmh-elfeed-org-check-configuration-file (file)
   "Make sure FILE exists.  If not, ask user what to do."
   (when (not (file-exists-p file))
-    (error "Elfeed-org cannot open %s.  Make sure it exists or set the variable \'rmh-elfeed-org-files\'"
+    (error "Elfeed-org cannot open %s.  Make sure it exists customize the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))))
 
 
