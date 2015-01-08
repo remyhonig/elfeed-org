@@ -99,4 +99,5 @@ In your initialization script add the following:
 
     ;; Optionally specify a number of files containing elfeed
     ;; configuration. If not set then the location below is used.
+    ;; Note: The customize interface is also supported.
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
