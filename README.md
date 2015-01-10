@@ -62,7 +62,7 @@ A few tips for the org-mode feed configuration:
 * Tag rules must start with `entry-title: `.
 * You may add text below the headline with the url to describe the
   feed or to add notes. They will be ignored.
-* Headlines not starting with `http` of `entry-title: ` will be ignored.
+* Headlines not starting with `http` or `entry-title: ` will be ignored.
 
 # Installation
 
