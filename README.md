@@ -61,6 +61,7 @@ A few tips for the org-mode feed configuration:
 * Feeds must start with `http`.
 * Tag rules must start with `entry-title: ` and end with a regular expression.
 * A tag rule tags all the posts that match the regular expression in the title 
+  using a "tag hook" with `elfeed-make-tagger`. For more info see https://github.com/skeeto/elfeed
 * You may add text below the headline with the url to describe the
   feed or to add notes. They will be ignored.
 * Headlines not starting with `http` or `entry-title: ` will be ignored.
