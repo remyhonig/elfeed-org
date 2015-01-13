@@ -59,7 +59,8 @@ A few tips for the org-mode feed configuration:
 * The tree must have an ID property matching the string specified in
   the variable `rmh-elfeed-org-tree-id`.
 * Feeds must start with `http`.
-* Tag rules must start with `entry-title: `.
+* Tag rules must start with `entry-title: ` and end with a regular expression.
+* A tag rule tags all the posts that match the regular expression in the title 
 * You may add text below the headline with the url to describe the
   feed or to add notes. They will be ignored.
 * Headlines not starting with `http` or `entry-title: ` will be ignored.
