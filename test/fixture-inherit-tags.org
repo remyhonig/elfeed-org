@@ -1,0 +1,6 @@
+* tree1                                                                           :elfeed:
+** http://tree1.feed1                                                              :tag1:
+** subtree1
+*** http://subtree1.feed1
+* tree2                                                                           :elfeed:
+** http://tree2.feed2                                                              :tag3:

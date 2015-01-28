@@ -1,0 +1,4 @@
+* tree1
+** http://feed1
+* tree2
+** http://feed2
