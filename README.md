@@ -29,10 +29,7 @@ Org-mode makes the book keeping of tags and feeds much easier. Tags get
 inherited from parent headlines so there is no need to specify tags for each
 and every feed.
 
-    * Blogs
-     :PROPERTIES:
-     :ID: elfeed
-     :END:
+    * Blogs                                                              :elfeed:
     ** entry-title: \(linux\|linus\|ubuntu\|kde\|gnome\)                  :linux:
     ** http://git-annex.branchable.com/design/assistant/blog/index.rss :mustread:
     ** http://feeds.feedburner.com/InformationIsBeautiful
@@ -52,12 +49,40 @@ and every feed.
     **** http://feeds.feedburner.com/eclipselive
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
 
+## The Configuration Tree
+
+You can use multiple trees. Those trees can be in same file or in
+multiple files specified in the list `rmh-elfeed-org-files`.
+
+Why would I want to use multiple trees? You can have a tree in a file
+that you may want to share with your `emacs.d` on GitHub and keep your
+personal feeds in a separete private repository.
+
+In the initial version of this package the tree is identified by
+setting the ID property to to the value of `rmh-elfeed-org-tree-id`
+("elfeed" by default) but that property turns out to be special (see
+the
+[org mode manual](http://orgmode.org/manual/Special-properties.html#Special-properties))
+and I should not have used it. To not break any existing users'
+configurations this is still allowed but I recommend to tag the tree
+now with the value of `rmh-elfeed-org-tree-id`.
+
+So instead of
+
+    * Blogs
+     :PROPERTIES:
+     :ID: elfeed
+     :END:
+
+I recommend to use
+
+    * Blogs                                                              :elfeed:
 
 # Tips
 A few tips for the org-mode feed configuration:
 
-* The tree must have an ID property matching the string specified in
-  the variable `rmh-elfeed-org-tree-id`.
+* The tree should have a tag matching the string specified in the
+  variable `rmh-elfeed-org-tree-id`.
 * Feeds must start with `http`.
 * Tag rules must start with `entry-title: ` and end with a regular expression.
 * A tag rule tags all the posts that match the regular expression in the title 
