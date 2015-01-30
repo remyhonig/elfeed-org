@@ -3,9 +3,9 @@
 ;; Copyright (C) 2014  Remy Honig
 
 ;; Author           : Remy Honig <remyhonig@gmail.com>
-;; Package-Requires : ((elfeed "1.1.1") (org "7"))
+;; Package-Requires : ((elfeed "1.1.1") (org "7") (dash "2.10.0") (s "1.9.0"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
-;; Version          : 20141003.1
+;; Version          : 20150130.1
 ;; Keywords         : news
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -24,11 +24,11 @@
 ;;; Commentary:
 ;; Maintaining tags for all rss feeds is cumbersome using the regular
 ;; flat list where there is no hierarchy and tag names are duplicated
-;; a lot. Org-mode makes the book keeping of tags and feeds much
-;; easier. Tags get inherited from parent headlines. Multiple files
+;; a lot.  Org-mode makes the book keeping of tags and feeds much
+;; easier.  Tags get inherited from parent headlines.  Multiple files
 ;; can be specified to separate your private from your work feeds for
-;; example. You may also use tagging rules to tag feeds by entry-title
-;; keywords. See https://github.com/remyhonig/elfeed-org for usage.
+;; example.  You may also use tagging rules to tag feeds by entry-title
+;; keywords.  See https://github.com/remyhonig/elfeed-org for usage.
 
 ;;; Code:
 
@@ -44,22 +44,22 @@
 
 
 (defcustom rmh-elfeed-org-tree-id "elfeed"
-  "The ID property of the tree containing the RSS feeds."
+  "The tag or ID property on the trees containing the RSS feeds."
   :group 'elfeed-org
   :type 'string)
 
 
 (defcustom rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
-  "The files where we look to find the tree with the `rmh-elfeed-org-tree-id'."
+  "The files where we look to find trees with the `rmh-elfeed-org-tree-id'."
   :group 'elfeed-org
   :type '(repeat (file :tag "org-mode file")))
 
 
 (defun rmh-elfeed-org-check-configuration-file (file)
-  "Make sure FILE exists.  If not, ask user what to do."
+  "Make sure FILE exists."
   (when (not (file-exists-p file))
     (error "Elfeed-org cannot open %s.  Make sure it exists customize the variable \'rmh-elfeed-org-files\'"
-           (abbreviate-file-name file))))                                   
+           (abbreviate-file-name file))))
 
 
 (defun rmh-elfeed-org-import-trees (tree-id)
@@ -90,12 +90,12 @@ Argument TREE The structure returned by `org-element-parse-buffer'."
 
 
 (defun rmh-elfeed-org-cleanup-headlines (headlines tree-id)
-  "In all HEADLINES given remove the TAG."
-  (-map (lambda (e) (delete tree-id e)) headlines))
+  "In all HEADLINES given remove the TREE-ID."
+  (mapcar (lambda (e) (delete tree-id e)) headlines))
 
 
 (defun rmh-elfeed-org-import-headlines-from-files (files tree-id match)
-  "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list."
+  "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list, filter headlines on MATCH."
   (-distinct (-mapcat (lambda (file)
                         (with-current-buffer (find-file-noselect (expand-file-name file))
                           (org-mode)
@@ -106,14 +106,14 @@ Argument TREE The structure returned by `org-element-parse-buffer'."
 
 
 (defun rmh-elfeed-org-convert-headline-to-tagger-params (tagger-headline)
-  "Add new entry hooks for tagging KEYWORDS."
+  "Add new entry hooks for tagging configured with the found headline in TAGGER-HEADLINE."
   (list
    (s-trim (s-chop-prefix "entry-title:" (car tagger-headline)))
    (cdr tagger-headline)))
 
 
 (defun rmh-elfeed-org-export-entry-hook (tagger-params)
-  "Export TAGGER-PARAMS to the proper `elfeed' structure"
+  "Export TAGGER-PARAMS to the proper `elfeed' structure."
   (add-hook 'elfeed-new-entry-hook
             (elfeed-make-tagger
              :entry-title (car tagger-params)
@@ -140,10 +140,8 @@ Argument TREE The structure returned by `org-element-parse-buffer'."
     (lambda (headline)
       (let ((text (car headline)))
         (when (s-starts-with? "http" text)
-          (message (s-concat "Feed: " text))
           (rmh-elfeed-org-export-feed headline))
         (when (s-starts-with? "entry-title" text)
-          (message (s-concat "Entry-title: " text))
           (rmh-elfeed-org-export-entry-hook
            (rmh-elfeed-org-convert-headline-to-tagger-params headline))))))
   
@@ -155,7 +153,7 @@ Argument TREE The structure returned by `org-element-parse-buffer'."
 
 ;;;###autoload
 (defun elfeed-org ()
-  "Hook up rmh-elfeed-org to read the `org-mode' configuration when elfeed starts."
+  "Hook up rmh-elfeed-org to read the `org-mode' configuration when elfeed is run."
   (interactive)
   (message "elfeed-org is set up to handle elfeed configuration.")
   ;; Use an advice to load the configuration.
