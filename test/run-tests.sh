@@ -8,7 +8,8 @@ fi
 
 $EMACS -batch \
        $([[ $EMACS == "emacs23" ]] && echo -l ert.el) \
-       -l xtest.el
+       -l cl-lib.el \
+       -l xtest.el \
        -l ../elfeed-org.el \
        -l elfeed-org-test.el \
        -f ert-run-tests-batch-and-exit
