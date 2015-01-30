@@ -51,12 +51,12 @@ and every feed.
 
 ## The Configuration Tree
 
-You can use multiple trees. Those trees can be in same file or in
-multiple files specified in the list `rmh-elfeed-org-files`.
-
-Why would I want to use multiple trees? You can have a tree in a file
-that you may want to share with your `emacs.d` on GitHub and keep your
-personal feeds in a separete private repository.
+You can use multiple trees. Those trees can be in same file or spread
+across multiple files specified in the list
+`rmh-elfeed-org-files`. Why would I want to use multiple trees? You
+can have a tree in a file that you may want to share with your
+`emacs.d` on GitHub and keep your personal feeds in a separate private
+repository.
 
 In the initial version of this package the tree is identified by
 setting the ID property to to the value of `rmh-elfeed-org-tree-id`
