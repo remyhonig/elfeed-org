@@ -4,8 +4,9 @@
 ;;; Commentary:
 ;; 
 
+(require 'ert)
 (require 'xtest)
-(require 'elfeed-org "../elfeed-org.el")
+(require 'elfeed-org)
 
 ;;; Code:
 
