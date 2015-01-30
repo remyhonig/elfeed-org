@@ -10,7 +10,7 @@ $EMACS -batch \
        $([[ $EMACS == "emacs23" ]] && echo -l ert.el) \
        -l xtest.el
        -l ../elfeed-org.el \
-       -l elfeed-org-test.el
+       -l elfeed-org-test.el \
        -f ert-run-tests-batch-and-exit
 
 if [[ $EMACS != "emacs23" ]]; then
