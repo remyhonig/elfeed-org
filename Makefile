@@ -18,6 +18,7 @@ compile:
 	--eval "(progn (mapc #'byte-compile-file '(\"elfeed-org.el\")) (switch-to-buffer \"*Compile-Log*\") (ert t))"
 
 test:
+	$(CASKEMACS) -batch --eval="(message (org-version))"
 	$(CASKEMACS) -batch $(LOAD) -f ert-run-tests-batch-and-exit
 
 clean:
