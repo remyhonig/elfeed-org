@@ -32,11 +32,6 @@ Argument EXPECTED the expected feeds list."
   (let ((actual (with-fixture fixture
                               (rmh-elfeed-org-convert-tree-to-headlines "http"
                                (rmh-elfeed-org-import-trees "elfeed")))))
-    (prin1 "actual: ")
-    (print actual)
-    (prin1 "expected: ")
-    (print expected)
-    (print (equal actual expected))
     (equal actual expected)))
 
 ;;; Test cases:
