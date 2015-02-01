@@ -3,7 +3,7 @@
 
 (package-file "elfeed-org.el")
 
-(files "*.el" (:exclude "elfeed-org-test.el"))
+(files "*.el" (:exclude "test/elfeed-org-test.el"))
 
 (development
  (depends-on "elfeed")
@@ -11,5 +11,4 @@
  (depends-on "org")
  (depends-on "s")
  (depends-on "ert")
- (depends-on "xtest")
- (depends-on "cl-lib"))
+ (depends-on "xtest"))
