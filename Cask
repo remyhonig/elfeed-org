@@ -11,4 +11,5 @@
  (depends-on "org")
  (depends-on "s")
  (depends-on "ert")
- (depends-on "xtest"))
+ (depends-on "xtest")
+ (depends-on "cl-lib"))
