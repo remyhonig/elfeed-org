@@ -1,5 +1,6 @@
 elfeed-org
 ==============
+[![Travis](https://travis-ci.org/remyhonig/elfeed-org.svg)](https://travis-ci.org/remyhonig/elfeed-org)
 
   Configure the Elfeed RSS reader with an Orgmode file
 

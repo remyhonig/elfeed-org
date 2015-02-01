@@ -4,8 +4,9 @@
 ;;; Commentary:
 ;; 
 
+(require 'ert)
 (require 'xtest)
-(require 'elfeed-org "../elfeed-org.el")
+(require 'elfeed-org)
 
 ;;; Code:
 
@@ -31,11 +32,6 @@ Argument EXPECTED the expected feeds list."
   (let ((actual (with-fixture fixture
                               (rmh-elfeed-org-convert-tree-to-headlines "http"
                                (rmh-elfeed-org-import-trees "elfeed")))))
-    (prin1 "actual: ")
-    (print actual)
-    (prin1 "expected: ")
-    (print expected)
-    (print (equal actual expected))
     (equal actual expected)))
 
 ;;; Test cases:
@@ -55,48 +51,48 @@ Argument EXPECTED the expected feeds list."
 (xt-deftest rmh-elfeed-org-trees-with-tag
   (xt-note "Use any number of trees tagged with \"elfeed\"")
   (xtd-should 'xt-trees-with-id-length
-              ("fixture-no-ids-or-tags.org" 0)
-              ("fixture-one-tag.org" 1)
-              ("fixture-two-tags.org" 2)))
+              ("test/fixture-no-ids-or-tags.org" 0)
+              ("test/fixture-one-tag.org" 1)
+              ("test/fixture-two-tags.org" 2)))
 
 (xt-deftest rmh-elfeed-org-trees-with-id
   (xt-note "Use any number of trees with the id property \"elfeed\"")
   (xtd-should 'xt-trees-with-id-length
-              ("fixture-no-ids-or-tags.org" 0)
-              ("fixture-one-id.org" 1)
-              ("fixture-two-ids.org" 2)))
+              ("test/fixture-no-ids-or-tags.org" 0)
+              ("test/fixture-one-id2.org" 1)
+              ("test/fixture-two-ids.org" 2)))
 
 (xt-deftest rmh-elfeed-org-convert-tree-to-headlines
   (xt-note "Recusively include all feeds in a tree with their tags inherited from their parents")
   (xtd-should 'xt-feeds
-              ("fixture-no-ids-or-tags.org" nil)
-              ("fixture-one-tag.org"
+              ("test/fixture-no-ids-or-tags.org" nil)
+              ("test/fixture-one-tag.org"
                (("http1" elfeed tag1) ("http2" elfeed)))
-              ("fixture-two-tags.org"
+              ("test/fixture-two-tags.org"
                (("http1" elfeed) ("http2" elfeed)))))
 
 (xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("fixture-one-tag.org" "fixture-two-ids.org") "elfeed" "http")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-two-ids.org") "elfeed" "http")
               '(("http1" tag1) ("http2") ("http1" tag0 tag1) ("http2" tag2)))))
 
 (xt-deftest rmh-elfeed-org-headlines-and-entrytitles-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("fixture-one-tag.org" "fixture-entry-title.org") "elfeed" "entry-title")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed" "entry-title")
               '(("entry-title 1" tag1)))))
 
 (xt-deftest rmh-elfeed-org-unique-headlines-and-entrytitles-from-files
   (xt-note "Should not return two \"http2\" entries")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("fixture-one-tag.org" "fixture-entry-title.org") "elfeed" "\\(http\\|entry-title\\)")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed" "\\(http\\|entry-title\\)")
               '(("http1" tag1) ("http2") ("entry-title 1" tag1)))))
 
 (xt-deftest rmh-elfeed-org-feeds-get-from-with-none-found
   (xt-note "Make sure no nil values instead of feeds are returned")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("fixture-one-tag.org" "fixture-one-id-no-feeds.org") "elfeed" "http")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-one-id-no-feeds.org") "elfeed" "http")
               '(("http1" tag1) ("http2")))))
 
 (provide 'elfeed-org-test)
