@@ -98,7 +98,7 @@ A few tips for the org-mode feed configuration:
 
 This package needs `org-mode 8.2.7` to run properly if you use the `emacs-24` distribution. The reason that that org-mode version is needed is because `org-mode 8.2.6` - at least in combination with `GNU Emacs 24.4.50.1` - causes the error `(error "recenter'ing a window that does not display current-buffer.")`.
 
-The minimum version of org-mode that is minimally needed to even run is `org-mode 7.9.4` as that is the first release that defined the function `org-element-map` which is critical for this package.
+The minimum version of org-mode that is minimally needed to even run is `org-mode 8.1` as that is the first release that defined the function `org-element-map` which is critical for this package.
 
 ## Through MELPA
 [![MELPA](http://melpa.org/packages/elfeed-org-badge.svg)](http://melpa.org/#/elfeed-org)
