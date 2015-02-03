@@ -3,7 +3,7 @@ EMACS = emacs
 
 CASK = ~/.cask/bin/cask
 CASKEMACS = $(CASK) exec $(EMACS)
-LOAD =  -l org-mode/lisp/org-loaddefs.el -l elfeed-org.el -l test/elfeed-org-test.el
+LOAD =  -L org-mode/lisp -l elfeed-org.el -l test/elfeed-org-test.el
 
 # http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
 .PHONY: cask test
