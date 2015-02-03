@@ -1,6 +1,5 @@
 elfeed-org
 ==============
-[![Travis](https://travis-ci.org/remyhonig/elfeed-org.svg)](https://travis-ci.org/remyhonig/elfeed-org)
 
   Configure the Elfeed RSS reader with an Orgmode file
 
@@ -93,6 +92,13 @@ A few tips for the org-mode feed configuration:
 * Headlines not starting with `http` or `entry-title: ` will be ignored.
 
 # Installation
+
+## Requirements
+[![Travis](https://travis-ci.org/remyhonig/elfeed-org.svg)](https://travis-ci.org/remyhonig/elfeed-org)
+
+This package needs `org-mode 8.2.7` to run properly if you use the `emacs-24` distribution. The reason that that org-mode version is needed is because `org-mode 8.2.6` - at least in combination with `GNU Emacs 24.4.50.1` - causes the error `(error "recenter'ing a window that does not display current-buffer.")`.
+
+The minimum version of org-mode that is minimally needed to even run is `org-mode 7.9.4` as that is the first release that defined the function `org-element-map` which is critical for this package.
 
 ## Through MELPA
 [![MELPA](http://melpa.org/packages/elfeed-org-badge.svg)](http://melpa.org/#/elfeed-org)
