@@ -14,10 +14,19 @@ env:
   # Cask does not support Emacs 23.
   # Therefore I don't support emacs-23
   # - EMACS=emacs23
+
+  # test the minimum supported requirements
+  # 8.2.6 fails with (error "`recenter'ing a window that does not display current-buffer.")
+  - EMACS=emacs24 ORG=release_8.2.7
+
+  # test latest released emacs and org-mode
   - EMACS=emacs24 ORG=release_8.2.10
-  - EMACS=emacs24 ORG=master
+
+  # test newest emacs with minimum supported org-modee
+  - EMACS=emacs-snapshot ORG=release_8.2.7
+
+  # test newest emacs with latest released org-mode
   - EMACS=emacs-snapshot ORG=release_8.2.10
-  - EMACS=emacs-snapshot ORG=master
 script:
   - make cask
   - make test
