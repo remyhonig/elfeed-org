@@ -8,21 +8,16 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq -yy ${EMACS}-nox ${EMACS}-el
   - curl -fsSkL --max-time 10 --retry 10 --retry-delay 10 https://raw.github.com/cask/cask/master/go | python
-  - git clone git://orgmode.org/org-mode.git && cd org-mode && make autoloads && cd ..
+  - git clone git://orgmode.org/org-mode.git && cd org-mode && git checkout ${ORG} && make autoloads && cd ..
 env:
   # I want to use Cask to gather dependencies
   # Cask does not support Emacs 23.
   # Therefore I don't support emacs-23
   # - EMACS=emacs23
-
-  # Emacs 24 is shipped with Org version 7.9.3f
-  # that version does not have the org-element-map function
-  # So I won't test on emacs 24
   - EMACS=emacs24
-
-  # Emacs-snapshot is shipped with Org version 8.2.10
-  # That version has the org-element-map function we need.
   - EMACS=emacs-snapshot
+  - ORG=release_8.2.10
+  - ORG=master
 script:
   - make cask
   - make test
