@@ -8,7 +8,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq -yy ${EMACS}-nox ${EMACS}-el
   - curl -fsSkL --max-time 10 --retry 10 --retry-delay 10 https://raw.github.com/cask/cask/master/go | python
-  - git clone git://orgmode.org/org-mode.git && make autoloads
+  - git clone git://orgmode.org/org-mode.git && cd org-mode && make autoloads && cd ..
 env:
   # I want to use Cask to gather dependencies
   # Cask does not support Emacs 23.
