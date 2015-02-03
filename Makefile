@@ -3,7 +3,7 @@ EMACS = emacs
 
 CASK = ~/.cask/bin/cask
 CASKEMACS = $(CASK) exec $(EMACS)
-LOAD = -l elfeed-org.el -l test/elfeed-org-test.el
+LOAD =  -l org-mode/lisp/org-loaddefs.el -l elfeed-org.el -l test/elfeed-org-test.el
 
 # http://stackoverflow.com/questions/3931741/why-does-make-think-the-target-is-up-to-date
 .PHONY: cask test
@@ -18,7 +18,7 @@ compile:
 	--eval "(progn (mapc #'byte-compile-file '(\"elfeed-org.el\")) (switch-to-buffer \"*Compile-Log*\") (ert t))"
 
 test:
-	$(CASKEMACS) -batch --eval="(message (concat \"Org version: \" (org-version) \" on Emacs version: \" (emacs-version)))"
+	$(CASKEMACS) -batch ${LOAD} --eval="(message (concat \"Org version: \" (org-version) \" on Emacs version: \" (emacs-version)))"
 	$(CASKEMACS) -batch $(LOAD) -f ert-run-tests-batch-and-exit
 
 clean:
