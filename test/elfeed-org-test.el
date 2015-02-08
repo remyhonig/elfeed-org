@@ -1,5 +1,4 @@
 ;;; elfeed-org-test.el --- Automated tests for elfeed-org
-;(setq unit (expand-file-name "../elfeed-org.el"))
 
 ;;; Commentary:
 ;; 
