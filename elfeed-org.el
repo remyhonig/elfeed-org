@@ -79,12 +79,11 @@ current users."
 (defun rmh-elfeed-org-convert-tree-to-headlines (parsed-org)
   "Get the inherited tags from PARSED-ORG structure if MATCH-FUNC is t.
 The algorithm to gather inherited tags depends on the tree being
-visited depth first by org-element-map.  The reason I don't use
+visited depth first by `org-element-map'.  The reason I don't use
 `org-get-tags-at' for this is that I can reuse the parsed org
 structure and I am not dependent on the setting of
 `org-use-tag-inheritance' or an org buffer being present at
-all. Which in my opinion makes the process more traceable and
-because it is simpler."
+all.  Which in my opinion makes the process more traceable."
   (let* ((tags '())
          (level 1))
     (org-element-map parsed-org 'headline
@@ -93,7 +92,7 @@ because it is simpler."
                (delta-level (- current-level level))
                (delta-tags (mapcar 'intern (org-element-property :tags h)))
                (heading (org-element-property :raw-value h)))
-          ;; update the tags stack when we visit a parent or sibling 
+          ;; update the tags stack when we visit a parent or sibling
           (unless (> delta-level 0)
             (let ((drop-num (+ 1 (- delta-level))))
               (setq tags (-drop drop-num tags))))
@@ -107,6 +106,7 @@ because it is simpler."
 
 ;; TODO: mark wrongly formatted feeds (PoC for unretrievable feeds)
 (defun rmh-elfeed-org-flag-headlines (parsed-org)
+  "Flag headlines in PARSED-ORG if they don't have a valid value."
   (org-element-map parsed-org 'headline
     (lambda (h)
       (let ((tags (org-element-property :tags h)))
