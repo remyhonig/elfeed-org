@@ -170,7 +170,7 @@ Argument EXPECTED the expected feeds list."
                   (insert (org-element-interpret-data
                            (rmh-elfeed-org-flag-headlines parsed-org)))))
               ("* tree1  :elfeed:\n-!-"
-               "* tree1                                                                    :_flag_:elfeed:\n-!-"
+               "* tree1                                                       :_flag_:elfeed:\n-!-"
                )))
 
 (provide 'elfeed-org-test)
