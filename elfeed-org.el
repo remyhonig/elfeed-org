@@ -76,17 +76,49 @@ current users."
                 (equal tree-id (org-element-property :ID h))) h))))
 
 
-(defun rmh-elfeed-org-convert-tree-to-headlines (match tree)
-  "Return all headlines that match the regular expression in MATCH in TREE.
-Argument TREE The structure returned by `org-element-parse-buffer'."
-  (org-element-map
-      tree
-      'headline
+(defun rmh-elfeed-org-convert-tree-to-headlines (parsed-org)
+  "Get the inherited tags from PARSED-ORG structure if MATCH-FUNC is t.
+The algorithm to gather inherited tags depends on the tree being
+visited depth first by org-element-map.  The reason I don't use
+`org-get-tags-at' for this is that I can reuse the parsed org
+structure and I am not dependent on the setting of
+`org-use-tag-inheritance' or an org buffer being present at
+all. Which in my opinion makes the process more traceable and
+because it is simpler."
+  (let* ((tags '())
+         (level 1))
+    (org-element-map parsed-org 'headline
+      (lambda (h)
+        (let* ((current-level (org-element-property :level h))
+               (delta-level (- current-level level))
+               (delta-tags (mapcar 'intern (org-element-property :tags h)))
+               (heading (org-element-property :raw-value h)))
+          ;; update the tags stack when we visit a parent or sibling 
+          (unless (> delta-level 0)
+            (let ((drop-num (+ 1 (- delta-level))))
+              (setq tags (-drop drop-num tags))))
+          ;; save current level to compare with next heading that will be visited
+          (setq level current-level)
+          ;; save the tags that might apply to potential children of the current heading
+          (push (-concat (-first-item tags) delta-tags) tags)
+          ;; return the heading and inherited tags
+          (-concat (list heading)
+                   (-first-item tags)))))))
+
+;; TODO: mark wrongly formatted feeds (PoC for unretrievable feeds)
+(defun rmh-elfeed-org-flag-headlines (parsed-org)
+  (org-element-map parsed-org 'headline
     (lambda (h)
-      (when (string-match match (org-element-property :raw-value h))
-        (append
-         (list (org-element-property :raw-value h))
-         (mapcar 'intern (org-get-tags-at (org-element-property :begin h))))))))
+      (let ((tags (org-element-property :tags h)))
+        (org-element-put-property h :tags (push "_flag_" tags))))))
+
+
+(defun rmh-elfeed-org-filter-relevant (list)
+  "Filter relevant entries from the LIST."
+  (-filter
+   (lambda (entry)
+     (string-match "\\(http\\|entry-title\\)" (car entry)))
+   list))
 
 
 (defun rmh-elfeed-org-cleanup-headlines (headlines tree-id)
@@ -94,13 +126,15 @@ Argument TREE The structure returned by `org-element-parse-buffer'."
   (mapcar (lambda (e) (delete tree-id e)) headlines))
 
 
-(defun rmh-elfeed-org-import-headlines-from-files (files tree-id match)
+(defun rmh-elfeed-org-import-headlines-from-files (files tree-id)
   "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list, filter headlines on MATCH."
   (-distinct (-mapcat (lambda (file)
                         (with-current-buffer (find-file-noselect (expand-file-name file))
                           (org-mode)
                           (rmh-elfeed-org-cleanup-headlines
-                           (rmh-elfeed-org-convert-tree-to-headlines match (rmh-elfeed-org-import-trees tree-id))
+                           (rmh-elfeed-org-filter-relevant
+                            (rmh-elfeed-org-convert-tree-to-headlines
+                             (rmh-elfeed-org-import-trees tree-id)))
                            (intern tree-id))))
                       files)))
 
@@ -136,7 +170,7 @@ Argument TREE The structure returned by `org-element-parse-buffer'."
   (setq elfeed-new-entry-hook nil)
 
   ;; Concert org structure to elfeed structure
-  (-each (rmh-elfeed-org-import-headlines-from-files files tree-id "\\(http\\|entry-title\\)")
+  (-each (rmh-elfeed-org-import-headlines-from-files files tree-id)
     (lambda (headline)
       (let ((text (car headline)))
         (when (s-starts-with? "http" text)

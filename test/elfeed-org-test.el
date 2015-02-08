@@ -29,8 +29,10 @@ Argument EXPECTED-LENGTH The number of trees found in the FIXTURE."
 Argument FIXTURE An org file.
 Argument EXPECTED the expected feeds list."
   (let ((actual (with-fixture fixture
-                              (rmh-elfeed-org-convert-tree-to-headlines "http"
-                               (rmh-elfeed-org-import-trees "elfeed")))))
+                              (rmh-elfeed-org-filter-relevant
+                               (rmh-elfeed-org-convert-tree-to-headlines
+                                (rmh-elfeed-org-import-trees "elfeed"))))))
+    
     (equal actual expected)))
 
 ;;; Test cases:
@@ -93,6 +95,83 @@ Argument EXPECTED the expected feeds list."
   (xt-should (equal
               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-one-id-no-feeds.org") "elfeed" "http")
               '(("http1" tag1) ("http2")))))
+
+(xt-deftest rmh-elfeed-org-gets-inherited-tags2
+  (xt-note "Get all headlines with inherited tags")
+  (xtd-return= (lambda (_) (progn (org-mode)
+                             (rmh-elfeed-org-convert-tree-to-feeds
+                              (org-element-parse-buffer 'headline))))
+               ("
+* tree1 :elfeed:
+** http1 :tag1:
+** tree2 :tag2:
+*** http2 :tag3:
+** http4 :tag5:
+* tree3 :elfeed:
+** http3 :tag4:"
+                '(("tree1" elfeed)
+                  ("http1" elfeed tag1)
+                  ("tree2" elfeed tag2)
+                  ("http2" elfeed tag2 tag3)
+                  ("http4" elfeed tag5)
+                  ("tree3" elfeed)
+                  ("http3" elfeed tag4)))))
+
+(xt-deftest rmh-elfeed-org-test-filter
+  (xt-note "Get headlines filtered")
+  (xtd-return= (lambda (_) (progn (org-mode)
+                             (rmh-elfeed-org-filter-relevant
+                              (rmh-elfeed-org-convert-tree-to-feeds
+                               (org-element-parse-buffer 'headline)
+                               ))))
+               ("
+* tree1 :elfeed:
+** http1 :tag1:
+** entry-title :tag2:
+*** http2 :tag3:
+** http4 :tag5:
+* tree3 :elfeed:
+** http3 :tag4:"
+                '(("http1" elfeed tag1)
+                  ("entry-title" elfeed tag2)
+                  ("http2" elfeed tag2 tag3)
+                  ("http4" elfeed tag5)
+                  ("http3" elfeed tag4)))))
+
+(xt-deftest rmh-elfeed-org-test-cleanup
+  (xt-note "The tag of the root tree node should not be included.")
+  (xtd-return= (lambda (_) (progn (org-mode)
+                             (rmh-elfeed-org-cleanup-headlines
+                              (rmh-elfeed-org-convert-tree-to-feeds
+                               (org-element-parse-buffer 'headline)
+                               ) 'elfeed)))
+               ("
+* tree1 :elfeed:
+** http1 :tag1:
+** tree2 :tag2:
+*** http2 :tag3:
+** http4 :tag5:
+* tree3 :elfeed:
+** http3 :tag4:"
+                '(("tree1")
+                  ("http1" tag1)
+                  ("tree2" tag2)
+                  ("http2" tag2 tag3)
+                  ("http4" tag5)
+                  ("tree3")
+                  ("http3" tag4)))))
+
+(xt-deftest rmh-elfeed-org-test-flagging
+  (xt-note "Wrongly formatted headlines are tagged to be ignored during import.")
+  (xtd-setup= (lambda (_)
+                (org-mode)
+                (let ((parsed-org (org-element-parse-buffer 'headline)))
+                  (delete-region (point-min) (point-max))
+                  (insert (org-element-interpret-data
+                           (rmh-elfeed-org-flag-headlines parsed-org)))))
+              ("* tree1  :elfeed:\n-!-"
+               "* tree1                                                                    :_flag_:elfeed:\n-!-"
+               )))
 
 (provide 'elfeed-org-test)
 
