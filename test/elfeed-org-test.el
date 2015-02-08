@@ -83,7 +83,7 @@ Argument EXPECTED the expected feeds list."
               '(("entry-title 1" tag1)))))
 
 (xt-deftest rmh-elfeed-org-unique-headlines-and-entrytitles-from-files
-  (xt-note "Should not return two \"http2\" entries")
+  (xt-note "Should not return duplicate feeds, in this case two \"http2\" entries")
   (xt-should (equal
               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed" "\\(http\\|entry-title\\)")
               '(("http1" tag1) ("http2") ("entry-title 1" tag1)))))
