@@ -80,7 +80,7 @@ Argument EXPECTED the expected feeds list."
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
   (xt-should (equal
               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed" "entry-title")
-              '(("entry-title 1" tag1)))))
+              '(("http1" tag1) ("http2") ("entry-title 1" tag1)))))
 
 (xt-deftest rmh-elfeed-org-unique-headlines-and-entrytitles-from-files
   (xt-note "Should not return duplicate feeds, in this case two \"http2\" entries")
