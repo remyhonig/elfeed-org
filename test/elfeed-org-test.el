@@ -75,31 +75,31 @@ Argument EXPECTED the expected feeds list."
 (xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-two-ids.org") "elfeed" "http")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-two-ids.org") "elfeed")
               '(("http1" tag1) ("http2") ("http1" tag0 tag1) ("http2" tag2)))))
 
 (xt-deftest rmh-elfeed-org-headlines-and-entrytitles-from-files
-  (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
+  (xt-note "Use all feeds in multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed" "entry-title")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed")
               '(("http1" tag1) ("http2") ("entry-title 1" tag1)))))
 
 (xt-deftest rmh-elfeed-org-unique-headlines-and-entrytitles-from-files
   (xt-note "Should not return duplicate feeds, in this case two \"http2\" entries")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed" "\\(http\\|entry-title\\)")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-entry-title.org") "elfeed")
               '(("http1" tag1) ("http2") ("entry-title 1" tag1)))))
 
 (xt-deftest rmh-elfeed-org-feeds-get-from-with-none-found
   (xt-note "Make sure no nil values instead of feeds are returned")
   (xt-should (equal
-              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-one-id-no-feeds.org") "elfeed" "http")
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-one-id-no-feeds.org") "elfeed")
               '(("http1" tag1) ("http2")))))
 
 (xt-deftest rmh-elfeed-org-gets-inherited-tags2
   (xt-note "Get all headlines with inherited tags")
   (xtd-return= (lambda (_) (progn (org-mode)
-                             (rmh-elfeed-org-convert-tree-to-feeds
+                             (rmh-elfeed-org-convert-tree-to-headlines
                               (org-element-parse-buffer 'headline))))
                ("
 * tree1 :elfeed:
@@ -121,7 +121,7 @@ Argument EXPECTED the expected feeds list."
   (xt-note "Get headlines filtered")
   (xtd-return= (lambda (_) (progn (org-mode)
                              (rmh-elfeed-org-filter-relevant
-                              (rmh-elfeed-org-convert-tree-to-feeds
+                              (rmh-elfeed-org-convert-tree-to-headlines
                                (org-element-parse-buffer 'headline)
                                ))))
                ("
@@ -142,7 +142,7 @@ Argument EXPECTED the expected feeds list."
   (xt-note "The tag of the root tree node should not be included.")
   (xtd-return= (lambda (_) (progn (org-mode)
                              (rmh-elfeed-org-cleanup-headlines
-                              (rmh-elfeed-org-convert-tree-to-feeds
+                              (rmh-elfeed-org-convert-tree-to-headlines
                                (org-element-parse-buffer 'headline)
                                ) 'elfeed)))
                ("
