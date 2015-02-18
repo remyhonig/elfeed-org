@@ -22,7 +22,7 @@ env:
   # test latest released emacs and org-mode
   - EMACS=emacs24 ORG=release_8.2.10
 
-  # test newest emacs with minimum supported org-modee
+  # test newest emacs with minimum supported org-mode
   - EMACS=emacs-snapshot ORG=release_8.2.7
 
   # test newest emacs with latest released org-mode
