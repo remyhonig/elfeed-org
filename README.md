@@ -96,6 +96,16 @@ A few tips for the org-mode feed configuration:
 ## Requirements
 [![Travis](https://travis-ci.org/remyhonig/elfeed-org.svg)](https://travis-ci.org/remyhonig/elfeed-org)
 
+This package is automatically tested for the following combinations of
+versions, so you can assume =elfeed-org= will work for them.
+
+| org-mode | emacs |
+|----------|-------|
+| 8.2.7    | 24.4  |
+| 8.2.10   | 24.4  |
+| 8.2.7    | 24.3  |
+| 8.2.10   | 24.3  |
+
 This package needs `org-mode 8.2.7` to run properly if you use the `emacs-24` distribution. The reason that that org-mode version is needed is because `org-mode 8.2.6` - at least in combination with `GNU Emacs 24.4.50.1` - causes the error `(error "recenter'ing a window that does not display current-buffer.")`.
 
 The minimum version of org-mode that is minimally needed to even run is `org-mode 8.1` as that is the first release that defined the function `org-element-map` which is critical for this package.
