@@ -7,7 +7,6 @@
 
 (depends-on "elfeed")
 (depends-on "dash")
-(depends-on "org")
 (depends-on "s")
 
 (development

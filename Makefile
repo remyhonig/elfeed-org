@@ -17,7 +17,6 @@ build:
 	$(CASK) build
 
 test:
-	$(CASKEMACS) -batch ${LOAD-ORGMODE} --eval="(message (concat \"Org version: \" (org-version) \" on Emacs version: \" (emacs-version)))"
 	$(CASK) exec ert-runner ${LOAD-ORGMODE}
 clean:
 	$(CASK) clean-elc
