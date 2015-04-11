@@ -14,15 +14,15 @@ env:
 
   # test the minimum supported requirements
   # 8.2.6 fails with (error "`recenter'ing a window that does not display current-buffer.")
-  - EMACS=emacs-24.4-bin ORG=release_8.2.7
+  - EVM_EMACS=emacs-24.4-bin ORG=release_8.2.7
 
   # test latest released emacs and org-mode
-  - EMACS=emacs-24.4-bin ORG=release_8.2.10
+  - EVM_EMACS=emacs-24.4-bin ORG=release_8.2.10
 
   # test newest emacs with minimum supported org-mode
-  - EMACS=emacs-24.3-bin ORG=release_8.2.7
+  - EVM_EMACS=emacs-24.3-bin ORG=release_8.2.7
 
   # test newest emacs with latest released org-mode
-  - EMACS=emacs-24.3-bin ORG=release_8.2.10
+  - EVM_EMACS=emacs-24.3-bin ORG=release_8.2.10
 script:
   - make test
