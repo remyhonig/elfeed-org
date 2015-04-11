@@ -1,5 +1,5 @@
-EMACS = emacs
-CASK = ~/.cask/bin/cask
+EMACS ?= emacs
+CASK ?= cask
 
 CASKEMACS = $(CASK) exec $(EMACS)
 LOAD-ORGMODE = -L org-mode/lisp
