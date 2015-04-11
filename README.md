@@ -97,7 +97,7 @@ A few tips for the org-mode feed configuration:
 [![Travis](https://travis-ci.org/remyhonig/elfeed-org.svg)](https://travis-ci.org/remyhonig/elfeed-org)
 
 This package is automatically tested for the following combinations of
-versions, so you can assume =elfeed-org= will work for them.
+versions, so you can assume `elfeed-org` will work for them.
 
 | org-mode | emacs |
 |----------|-------|
