@@ -169,7 +169,7 @@ all.  Which in my opinion makes the process more traceable."
   (setq elfeed-feeds nil)
   (setq elfeed-new-entry-hook nil)
 
-  ;; Concert org structure to elfeed structure
+  ;; Convert org structure to elfeed structure
   (-each (rmh-elfeed-org-import-headlines-from-files files tree-id)
     (lambda (headline)
       (let ((text (car headline)))
