@@ -1,4 +1,5 @@
 language: emacs-lisp
+sudo: required
 before_install:
   - curl -fsSkL https://gist.github.com/rejeep/7736123/raw | sh
   - export PATH="/home/travis/.cask/bin:$PATH"
