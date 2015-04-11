@@ -3,12 +3,13 @@
 
 (package-file "elfeed-org.el")
 
-(files "*.el" (:exclude "test/elfeed-org-test.el"))
+(files "elfeed-org*.el")
+
+(depends-on "elfeed")
+(depends-on "dash")
+(depends-on "org")
+(depends-on "s")
 
 (development
- (depends-on "elfeed")
- (depends-on "dash")
- (depends-on "org")
- (depends-on "s")
- (depends-on "ert")
- (depends-on "xtest"))
+ (depends-on "xtest")
+ (depends-on "ert-runner"))
