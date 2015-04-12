@@ -1,0 +1,9 @@
+* tree1                                                                             :tag3:
+:PROPERTIES:
+:ID: elfeed
+:END:
+** http://tree1.feed1                                                               :tag1:
+** subtree1
+*** http://subtree1.feed1
+* tree2                                                                             :tag2:
+** http://tree2.feed2                                                               :tag3:

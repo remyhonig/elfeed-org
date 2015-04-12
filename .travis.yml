@@ -1,0 +1,29 @@
+language: emacs-lisp
+sudo: required
+before_install:
+  - curl -fsSkL https://gist.github.com/rejeep/7736123/raw | sh
+  - export PATH="/home/travis/.cask/bin:$PATH"
+  - export PATH="/home/travis/.evm/bin:$PATH"
+  - evm install $EVM_EMACS --use || true
+  - cask
+  - git clone git://orgmode.org/org-mode.git && cd org-mode && git checkout ${ORG} && make autoloads && cd ..
+env:
+  # I want to use Cask to gather dependencies
+  # Cask does not support Emacs 23.
+  # Therefore I don't support emacs-23
+  # - EMACS=emacs23
+
+  # test the minimum supported requirements
+  # 8.2.6 fails with (error "`recenter'ing a window that does not display current-buffer.")
+  - EVM_EMACS=emacs-24.4-bin ORG=release_8.2.7
+
+  # test latest released emacs and org-mode
+  - EVM_EMACS=emacs-24.4-bin ORG=release_8.2.10
+
+  # test newest emacs with minimum supported org-mode
+  - EVM_EMACS=emacs-24.3-bin ORG=release_8.2.7
+
+  # test newest emacs with latest released org-mode
+  - EVM_EMACS=emacs-24.3-bin ORG=release_8.2.10
+script:
+  - make test
