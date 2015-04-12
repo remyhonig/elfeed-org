@@ -5,7 +5,7 @@
 ;; Author           : Remy Honig <remyhonig@gmail.com>
 ;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (dash "2.10.0") (s "1.9.0"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
-;; Version          : 20150204.1
+;; Version          : 20150412.1
 ;; Keywords         : news
 
 ;; This program is free software; you can redistribute it and/or modify
