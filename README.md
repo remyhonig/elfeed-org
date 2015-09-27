@@ -83,9 +83,11 @@ A few tips for the org-mode feed configuration:
 
 * The tree should have a tag matching the string specified in the
   variable `rmh-elfeed-org-tree-id`.
-* Feeds must start with `http`.
+* Feeds must start with `http`, or be in
+  [org-mode link format](http://orgmode.org/org.html#Link-format) (the
+  URL should still start with `http`).
 * Tag rules must start with `entry-title: ` and end with a regular expression.
-* A tag rule tags all the posts that match the regular expression in the title 
+* A tag rule tags all the posts that match the regular expression in the title
   using a "tag hook" with `elfeed-make-tagger`. For more info see https://github.com/skeeto/elfeed
 * You may add text below the headline with the url to describe the
   feed or to add notes. They will be ignored.
