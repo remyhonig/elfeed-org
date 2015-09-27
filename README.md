@@ -33,6 +33,7 @@ and every feed.
     ** entry-title: \(linux\|linus\|ubuntu\|kde\|gnome\)                  :linux:
     ** http://git-annex.branchable.com/design/assistant/blog/index.rss :mustread:
     ** http://feeds.feedburner.com/InformationIsBeautiful
+    ** [[http://orgmode.org][Org Mode Links supported as well]]
     ** Software Development                                                 :dev:
     *** Emacs                                                    :emacs:mustread:
     **** http://www.terminally-incoherent.com/blog/feed
