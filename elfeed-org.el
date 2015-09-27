@@ -172,15 +172,13 @@ all.  Which in my opinion makes the process more traceable."
  
   (setq subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
   (setq taggers (rmh-elfeed-org-filter-taggers headlines))
-  (message "tagger:\n")
-  (pp subscriptions)
-  
 
   (-each subscriptions 'rmh-elfeed-org-export-feed)
   (-each taggers (lambda (headline)
                    (rmh-elfeed-org-export-entry-hook
                     (rmh-elfeed-org-convert-headline-to-tagger-params headline))))
   
+  ;; Tell user what we did
   (message "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
            (length elfeed-new-entry-hook)))
