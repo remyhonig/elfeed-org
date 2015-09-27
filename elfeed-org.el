@@ -168,24 +168,40 @@ all.  Which in my opinion makes the process more traceable."
   ;; Clear elfeed structures
   (setq elfeed-feeds nil)
   (setq elfeed-new-entry-hook nil)
+  (setq headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
+ 
+  (setq subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
+  (setq taggers (rmh-elfeed-org-filter-taggers headlines))
+  (message "tagger:\n")
+  (pp subscriptions)
+  
 
-  ;; Convert org structure to elfeed structure
-  (-each (rmh-elfeed-org-import-headlines-from-files files tree-id)
-    (lambda (headline)
-      (let* ((text (car headline))
-             (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
-        (when hyperlink
-          (rmh-elfeed-org-export-feed (push (nth 1 hyperlink) (cdr headline))))
-        (when (s-starts-with? "http" text)
-          (rmh-elfeed-org-export-feed headline))
-        (when (s-starts-with? "entry-title" text)
-          (rmh-elfeed-org-export-entry-hook
-           (rmh-elfeed-org-convert-headline-to-tagger-params headline))))))
-
-  ;; Tell user what we did
+  (-each subscriptions 'rmh-elfeed-org-export-feed)
+  (-each taggers (lambda (headline)
+                   (rmh-elfeed-org-export-entry-hook
+                    (rmh-elfeed-org-convert-headline-to-tagger-params headline))))
+  
   (message "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
            (length elfeed-new-entry-hook)))
+ 
+
+(defun rmh-elfeed-org-filter-taggers (headlines)
+  "Filter tagging rules from the HEADLINES in the tree."
+  (-non-nil (-map
+             (lambda (headline)
+               (when (s-starts-with? "entry-title" (car headline)) headline))
+             headlines)))
+
+(defun rmh-elfeed-org-filter-subscriptions (headlines)
+  "Filter subscriptions to rss feeds from the HEADLINES in the tree."
+  (-non-nil (-map
+             (lambda (headline)
+               (let* ((text (car headline))
+                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                 (cond ((s-starts-with? "http" text) text)
+                       (hyperlink (nth 1 hyperlink)))))
+             headlines)))
 
 
 ;;;###autoload

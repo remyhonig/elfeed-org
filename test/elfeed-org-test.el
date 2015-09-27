@@ -34,6 +34,13 @@
               ("test/fixture-two-tags.org"
                (("http1" elfeed) ("http2" elfeed)))))
 
+(xt-deftest rmh-elfeed-org-process
+  (xt-note "Make sure all types of headlines are recognized")
+  (xt-should (equal
+              (rmh-elfeed-org-filter-subscriptions
+               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed"))
+              '("http://url" "http://orgmodelink"))))
+
 (xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
   (xt-should (equal
