@@ -1,6 +1,0 @@
-* tree1                                                                             :tag3:
-:PROPERTIES:
-:ID: elfeed
-:END:
-** http://url                                                                       :tag1:
-** [[http://orgmodelink][orgmodelink]]
