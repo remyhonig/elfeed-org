@@ -127,7 +127,7 @@ all.  Which in my opinion makes the process more traceable."
 
 
 (defun rmh-elfeed-org-import-headlines-from-files (files tree-id)
-  "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list, filter headlines on MATCH."
+  "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list."
   (-distinct (-mapcat (lambda (file)
                         (with-current-buffer (find-file-noselect (expand-file-name file))
                           (org-mode)
@@ -150,8 +150,8 @@ all.  Which in my opinion makes the process more traceable."
   "Export TAGGER-PARAMS to the proper `elfeed' structure."
   (add-hook 'elfeed-new-entry-hook
             (elfeed-make-tagger
-             :entry-title (car tagger-params)
-             :add (cdr tagger-params))))
+             :entry-title (nth 0 tagger-params)
+             :add (nth 1 tagger-params))))
 
 
 (defun rmh-elfeed-org-export-feed (headline)
@@ -162,27 +162,44 @@ all.  Which in my opinion makes the process more traceable."
 (defun rmh-elfeed-org-process (files tree-id)
   "Process headlines and taggers from FILES with org headlines with TREE-ID."
 
-  ;; Warn if needed
+  ;; Warn if configuration files are missing
   (-each files 'rmh-elfeed-org-check-configuration-file)
-  
+
   ;; Clear elfeed structures
   (setq elfeed-feeds nil)
   (setq elfeed-new-entry-hook nil)
 
-  ;; Convert org structure to elfeed structure
-  (-each (rmh-elfeed-org-import-headlines-from-files files tree-id)
-    (lambda (headline)
-      (let ((text (car headline)))
-        (when (s-starts-with? "http" text)
-          (rmh-elfeed-org-export-feed headline))
-        (when (s-starts-with? "entry-title" text)
-          (rmh-elfeed-org-export-entry-hook
-           (rmh-elfeed-org-convert-headline-to-tagger-params headline))))))
+  ;; Convert org structure to elfeed structure and register taggers and subscriptions
+  (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
+         (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
+         (taggers (rmh-elfeed-org-filter-taggers headlines))
+         (elfeed-taggers (-map 'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
+         (elfeed-tagger-hooks (-map 'rmh-elfeed-org-export-entry-hook elfeed-taggers)))
+    (-each subscriptions 'rmh-elfeed-org-export-feed)
+    (-each taggers 'rmh-elfeed-org-export-entry-hook))
   
   ;; Tell user what we did
   (message "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
            (length elfeed-new-entry-hook)))
+ 
+
+(defun rmh-elfeed-org-filter-taggers (headlines)
+  "Filter tagging rules from the HEADLINES in the tree."
+  (-non-nil (-map
+             (lambda (headline)
+               (when (s-starts-with? "entry-title" (car headline)) headline))
+             headlines)))
+
+(defun rmh-elfeed-org-filter-subscriptions (headlines)
+  "Filter subscriptions to rss feeds from the HEADLINES in the tree."
+  (-non-nil (-map
+             (lambda (headline)
+               (let* ((text (car headline))
+                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                 (cond ((s-starts-with? "http" text) headline)
+                       (hyperlink (-concat (list (nth 1 hyperlink)) (cdr headline))))))
+             headlines)))
 
 
 ;;;###autoload
