@@ -34,12 +34,26 @@
               ("test/fixture-two-tags.org"
                (("http1" elfeed) ("http2" elfeed)))))
 
-(xt-deftest rmh-elfeed-org-process
+(xt-deftest rmh-elfeed-org-filter-taggers
+  (xt-note "Make sure all types of headlines are recognized")
+  (xt-should (equal
+              (rmh-elfeed-org-filter-taggers
+               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed"))
+              '(("entry-title: \\(linux\\|gnome\\)" tag3)
+                ("entry-title: \\(apple\\)" tag3)))))
+
+(xt-deftest rmh-elfeed-org-convert-headline-to-tagger-params
+  (xt-note "Entry titles are converted to elfeed structures")
+  (xt-should (equal
+              (rmh-elfeed-org-convert-headline-to-tagger-params '("entry-title: \\(apple\\)" tag3 tag4))
+              '("\\(apple\\)" (tag3 tag4)))))
+
+(xt-deftest rmh-elfeed-org-filter-subscriptions
   (xt-note "Make sure all types of headlines are recognized")
   (xt-should (equal
               (rmh-elfeed-org-filter-subscriptions
                (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed"))
-              '("http://url" "http://orgmodelink"))))
+              '(("http://url" tag3 tag1) ("http://orgmodelink" tag3)))))
 
 (xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")

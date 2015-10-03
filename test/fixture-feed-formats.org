@@ -2,5 +2,7 @@
 :PROPERTIES:
 :ID: elfeed
 :END:
+** entry-title: \(linux\|gnome\)
+** entry-title: \(apple\)
 ** http://url                                                                       :tag1:
 ** [[http://orgmodelink][orgmodelink]]
