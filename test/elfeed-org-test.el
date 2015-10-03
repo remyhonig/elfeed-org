@@ -35,7 +35,7 @@
                (("http1" elfeed) ("http2" elfeed)))))
 
 (xt-deftest rmh-elfeed-org-filter-taggers
-  (xt-note "Make sure all types of headlines are recognized")
+  (xt-note "Make sure tagging rules are recognized")
   (xt-should (equal
               (rmh-elfeed-org-filter-taggers
                (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed"))

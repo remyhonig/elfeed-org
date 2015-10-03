@@ -162,13 +162,14 @@ all.  Which in my opinion makes the process more traceable."
 (defun rmh-elfeed-org-process (files tree-id)
   "Process headlines and taggers from FILES with org headlines with TREE-ID."
 
-  ;; Warn if needed
+  ;; Warn if configuration files are missing
   (-each files 'rmh-elfeed-org-check-configuration-file)
 
   ;; Clear elfeed structures
   (setq elfeed-feeds nil)
   (setq elfeed-new-entry-hook nil)
-  
+
+  ;; Convert org structure to elfeed structure and register taggers and subscriptions
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
          (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
          (taggers (rmh-elfeed-org-filter-taggers headlines))
