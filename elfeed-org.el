@@ -211,7 +211,9 @@ all.  Which in my opinion makes the process more traceable."
   (let* ((entry-feed (match-string 1 path))
          (entry-url (match-string 2 path))
          (entry (gethash (cons entry-feed entry-url) elfeed-db-entries)))
-    (elfeed-show-entry entry)))
+	(if entry
+		(elfeed-show-entry entry)
+	  (error "This entry isn't in the database"))))
 
 (defun org-elfeed-store-link ()
   "Store a link to an elfeed entry."
