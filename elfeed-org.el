@@ -153,11 +153,16 @@ all.  Which in my opinion makes the process more traceable."
              :entry-title (nth 0 tagger-params)
              :add (nth 1 tagger-params))))
 
-
 (defun rmh-elfeed-org-export-feed (headline)
   "Export HEADLINE to the proper `elfeed' structure."
-  (add-to-list 'elfeed-feeds headline))
-
+  (if (and (stringp (car (last headline)))
+           (> (length headline) 1))
+      (progn
+        (add-to-list 'elfeed-feeds (butlast headline))
+        (let ((feed (elfeed-db-get-feed (car headline))))
+          (setf (elfeed-meta feed :title) (car (last headline)))
+          (elfeed-meta feed :title)))
+    (add-to-list 'elfeed-feeds headline)))
 
 (defun rmh-elfeed-org-process (files tree-id)
   "Process headlines and taggers from FILES with org headlines with TREE-ID."
@@ -177,12 +182,12 @@ all.  Which in my opinion makes the process more traceable."
          (elfeed-tagger-hooks (-map 'rmh-elfeed-org-export-entry-hook elfeed-taggers)))
     (-each subscriptions 'rmh-elfeed-org-export-feed)
     (-each taggers 'rmh-elfeed-org-export-entry-hook))
-  
+
   ;; Tell user what we did
   (message "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
            (length elfeed-new-entry-hook)))
- 
+
 
 (defun rmh-elfeed-org-filter-taggers (headlines)
   "Filter tagging rules from the HEADLINES in the tree."
@@ -196,8 +201,12 @@ all.  Which in my opinion makes the process more traceable."
   (-non-nil (-map
              (lambda (headline)
                (let* ((text (car headline))
+                      (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
                       (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
                  (cond ((s-starts-with? "http" text) headline)
+                       (link-and-title (-concat (list (nth 1 hyperlink))
+                                                (cdr headline)
+                                                (list (nth 2 link-and-title))))
                        (hyperlink (-concat (list (nth 1 hyperlink)) (cdr headline))))))
              headlines)))
 
