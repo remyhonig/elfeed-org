@@ -5,4 +5,5 @@
 ** entry-title: \(linux\|gnome\)
 ** entry-title: \(apple\)
 ** http://url                                                                       :tag1:
-** [[http://orgmodelink][orgmodelink]]
+** [[http://namedorgmodelink][namedorgmodelink]]
+** [[http://unnamedorgmodelink]]

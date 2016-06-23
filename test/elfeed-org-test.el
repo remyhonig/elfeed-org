@@ -53,7 +53,9 @@
   (xt-should (equal
               (rmh-elfeed-org-filter-subscriptions
                (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed"))
-              '(("http://url" tag3 tag1) ("http://orgmodelink" tag3)))))
+              '(("http://url" tag3 tag1)
+                ("http://namedorgmodelink" tag3 "namedorgmodelink")
+                ("http://unnamedorgmodelink" tag3)))))
 
 (xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
