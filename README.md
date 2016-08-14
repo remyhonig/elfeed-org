@@ -23,6 +23,8 @@ this is how elfeed users typically configure their subscriptions.
         ("http://www.anticscomic.com/?feed=rss2" comic)
         ("http://feeds.feedburner.com/blogspot/TPQSS" blog dev)))
 
+If you want to add a custom title to a feed, that is even more cumbersome...
+
 # Solution
 
 Org-mode makes the book keeping of tags and feeds much easier. Tags get
@@ -49,6 +51,10 @@ and every feed.
     **** http://ed-merks.blogspot.com/feeds/posts/default
     **** http://feeds.feedburner.com/eclipselive
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
+
+If you choose to use org-mode links, the link description will be used as the
+feed's title in Elfeed. This is useful for feeds with long titles, and is
+cumbersome to setup using the standard Elfeed setup.
 
 ## The Configuration Tree
 
