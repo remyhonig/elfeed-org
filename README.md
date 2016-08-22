@@ -53,8 +53,7 @@ and every feed.
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
 
 If you choose to use org-mode links, the link description will be used as the
-feed's title in Elfeed. This is useful for feeds with long titles, and is
-cumbersome to setup using the standard Elfeed setup.
+feed's title in Elfeed. This is useful for feeds with long titles.
 
 ## The Configuration Tree
 
