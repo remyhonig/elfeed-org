@@ -3,9 +3,9 @@
 ;; Copyright (C) 2014  Remy Honig
 
 ;; Author           : Remy Honig <remyhonig@gmail.com>
-;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (dash "2.10.0") (s "1.9.0"))
+;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (dash "2.10.0") (s "1.9.0") (cl-lib "0.5"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
-;; Version          : 20160814.1
+;; Version          : 20170421.1
 ;; Keywords         : news
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,8 @@
 (require 'org)
 (require 'dash)
 (require 's)
+(require 'cl-lib)
+(require 'xml)
 
 
 (defgroup elfeed-org nil
@@ -209,6 +211,107 @@ all.  Which in my opinion makes the process more traceable."
                                                 (list (nth 2 link-and-title))))
                        (hyperlink (-concat (list (nth 1 hyperlink)) (cdr headline))))))
              headlines)))
+
+
+(defun rmh-elfeed-org-convert-opml-to-org (xml level)
+  "Convert OPML content to Org format."
+  (cl-loop for (tag attr . content) in (cl-remove-if-not #'listp xml)
+           when (and (not (assoc 'xmlUrl attr)) (assoc 'title attr))
+           concat (format "%s %s\n" (make-string level ?*) (cdr it))
+           when (assoc 'xmlUrl attr)
+           concat (format "%s [[%s][%s]]\n" (make-string level ?*)
+                          (cdr it) (cdr (assoc 'title attr)))
+           concat (rmh-elfeed-org-convert-opml-to-org content (+ 1 level))))
+
+(defun elfeed-org-import-opml (opml-file)
+  "Import feeds from OPML file to a temporary Org buffer."
+  (interactive "FInput OPML file: ")
+  (let* ((xml (xml-parse-file opml-file))
+        (content (rmh-elfeed-org-convert-opml-to-org xml 0)))
+    (with-current-buffer (get-buffer-create "*Imported Org Feeds*")
+      (erase-buffer)
+      (insert (format "* Imported Feeds            :%s:\n" rmh-elfeed-org-tree-id))
+      (insert content)
+      (org-mode)
+      (pop-to-buffer (current-buffer)))))
+
+
+(defun rmh-elfeed-org-convert-org-to-opml (org-buffer)
+  "Convert Org buffer content to OPML format."
+  (let (need-ends
+        opml-body)
+    (with-current-buffer org-buffer
+      (org-mode)
+      (org-element-map (rmh-elfeed-org-import-trees
+                        rmh-elfeed-org-tree-id) 'headline
+        (lambda (h)
+          (let* ((current-level (org-element-property :level h))
+                 (tags (org-element-property :tags h))
+                 (heading (org-element-property :raw-value h))
+                 (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading))
+                 (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading))
+                 url
+                 title
+                 opml-outline)
+            ;; fill missing end outlines
+            (while (and (car need-ends) (>= (car need-ends) current-level))
+              (let* ((level (pop need-ends)))
+                (setq opml-body (concat opml-body (format "  %s</outline>\n"
+                                                          (make-string (* 2 level) ? ))))))
+
+            (cond ((s-starts-with? "http" heading)
+                   (setq url heading)
+                   (setq title "Unknown"))
+                  (link-and-title (setq url (nth 1 link-and-title))
+                                  (setq title (nth 2 link-and-title)))
+                  (hyperlink (setq url (nth 1 hyperlink))
+                             (setq title "Unknown"))
+                  (t (setq title heading)))
+            (if url
+                (setq opml-outline (format "  %s<outline title=\"%s\" xmlUrl=\"%s\"/>\n"
+                                           (make-string (* 2 current-level) ? )
+                                           title (xml-escape-string url)))
+              (unless (s-starts-with? "entry-title" heading)
+                (unless (member rmh-elfeed-org-tree-id tags)
+                  ;; insert category title only when it is neither the top
+                  ;; level elfeed node nor the entry-title node
+                  (progn
+                    (push current-level need-ends)
+                    (setq opml-outline (format "  %s<outline title=\"%s\">\n"
+                                               (make-string (* 2 current-level) ? )
+                                               title))))))
+            (setq opml-body (concat opml-body opml-outline))))))
+
+    ;; fill missing end outlines at end
+    (while (car need-ends)
+      (let* ((level (pop need-ends)))
+        (setq opml-body (concat opml-body (format "  %s</outline>\n"
+                                                  (make-string (* 2 level) ? ))))))
+    opml-body))
+
+(defun elfeed-org-export-opml ()
+  "Export Org feeds under `rmh-elfeed-org-files' to a temporary
+  OPML buffer with tree structures. Note that the first level
+  elfeed node will be ignored if there is not url for it, and
+  user may need edit the output again because most of Feed/RSS
+  readers only support maximize 2 level tree nodes."
+  (interactive)
+  (let ((opml-body (cl-loop for org-file in rmh-elfeed-org-files
+                             concat (rmh-elfeed-org-convert-org-to-opml
+                                     (find-file-noselect (expand-file-name org-file))))))
+    (with-current-buffer (get-buffer-create "*Exported OPML Feeds*")
+      (erase-buffer)
+      (insert "<?xml version=\"1.0\"?>\n")
+      (insert "<opml version=\"1.0\">\n")
+      (insert "  <head>\n")
+      (insert "    <title>Elfeed-Org Export</title>\n")
+      (insert "  </head>\n")
+      (insert "  <body>\n")
+      (insert opml-body)
+      (insert "  </body>\n")
+      (insert "</opml>\n")
+      (xml-mode)
+      (pop-to-buffer (current-buffer)))))
 
 
 ;;;###autoload
