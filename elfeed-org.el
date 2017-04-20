@@ -48,6 +48,10 @@
   :group 'elfeed-org
   :type 'string)
 
+(defcustom rmh-elfeed-org-ignore-tag "ignore"
+  "The tag on the feed trees that will be ignored."
+  :group 'elfeed-org
+  :type 'string)
 
 (defcustom rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
   "The files where we look to find trees with the `rmh-elfeed-org-tree-id'."
@@ -117,7 +121,9 @@ all.  Which in my opinion makes the process more traceable."
   "Filter relevant entries from the LIST."
   (-filter
    (lambda (entry)
-     (string-match "\\(http\\|entry-title\\)" (car entry)))
+     (and
+      (string-match "\\(http\\|entry-title\\)" (car entry))
+      (not (member (intern rmh-elfeed-org-ignore-tag) entry))))
    list))
 
 
