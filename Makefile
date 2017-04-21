@@ -11,12 +11,13 @@ all: install build test clean
 
 # install dependencies
 install:
-	$(CASK) install
+	EMACS=${EMACS} $(CASK) install
 
 build:
-	$(CASK) build
+	EMACS=${EMACS} $(CASK) build
 
 test:
-	$(CASK) exec ert-runner ${LOAD-ORGMODE}
+	EMACS=${EMACS} $(CASK) exec ert-runner ${LOAD-ORGMODE}
+
 clean:
-	$(CASK) clean-elc
+	EMACS=${EMACS} $(CASK) clean-elc
