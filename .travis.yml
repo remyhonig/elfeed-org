@@ -1,10 +1,7 @@
 language: emacs-lisp
 sudo: required
 before_install:
-  - curl -fsSkL https://gist.github.com/rejeep/7736123/raw | sh
-  - export PATH="/home/travis/.cask/bin:$PATH"
-  - export PATH="/home/travis/.evm/bin:$PATH"
-  - evm install $EVM_EMACS --use || true
+  - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
   - cask
   - git clone git://orgmode.org/org-mode.git && cd org-mode && git checkout ${ORG} && make autoloads && cd ..
 env:
