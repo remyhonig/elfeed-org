@@ -116,10 +116,10 @@ versions, so you can assume `elfeed-org` will work for them.
 
 | org-mode | emacs |
 |----------|-------|
-| 8.2.7    | 24.4  |
-| 8.2.10   | 24.4  |
+| 8.2.7    | 25.1  |
+| 9.0.5    | 25.1  |
 | 8.2.7    | 24.3  |
-| 8.2.10   | 24.3  |
+| 9.0.5    | 24.3  |
 
 This package needs `org-mode 8.2.7` to run properly if you use the `emacs-24` distribution. The reason that that org-mode version is needed is because `org-mode 8.2.6` - at least in combination with `GNU Emacs 24.4.50.1` - causes the error `(error "recenter'ing a window that does not display current-buffer.")`.
 
