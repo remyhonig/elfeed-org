@@ -49,11 +49,18 @@ and every feed.
     *** Eclipse                                                         :eclipse:
     **** http://blog.eclipse-tips.com/feeds/posts/default?alt=rss
     **** http://ed-merks.blogspot.com/feeds/posts/default
-    **** http://feeds.feedburner.com/eclipselive
+         A description of this feed can be written under any headline.
+         The text will be ignored by elfeed.
+    **** http://feeds.feedburner.com/eclipselive                         :ignore:
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
 
-If you choose to use org-mode links, the link description will be used as the
-feed's title in Elfeed. This is useful for feeds with long titles.
+
+Some highlights:
+
+* `[[http://orgmode.org][Org Mode Links supported as well]]` If you choose to use org-mode links, the link description will be used as the feed's title in Elfeed. This is useful for feeds with long titles.
+* `entry-title: \(emacs\|org-mode\)` Tags any blog post with "emacs" or "org-mode" in the title according to it's given and inherited tags (in the example above "emacs", "mustread" and "dev").
+* `http://feeds.feedburner.com/eclipselive :ignore:` The "ignore" excludes the feed completely from your checked subscriptions. You can use another name for "ignore" by customizing `rmh-elfeed-org-ignore-tag`. These "ignore" tags are set by elfeed-org automatically on feed errors (wrong urls or renamed feeds for example) if `rmh-elfeed-org-auto-ignore-invalid-feeds` is set to `t`.
+
 
 ## The Configuration Tree
 
