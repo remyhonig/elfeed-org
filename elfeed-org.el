@@ -71,31 +71,19 @@
     (error "Elfeed-org cannot open %s.  Make sure it exists customize the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))))
 
-(defun rmh-elfeed-org-mark-feed-ignore (url &optional notsave)
-  "Add tag `rmh-elfeed-org-ignore-tag' to target feed."
+(defun rmh-elfeed-org-mark-feed-ignore (url)
+  "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing
+the feed url. Warning: this applies to all headlines. Not just
+the headlines within an elfeed tree. It would be nice to have
+this fixed one day. The worst case scenario is that the ignored
+tag is toggled on a headline that is not within an elfeed tree."
   (dolist (org-file rmh-elfeed-org-files)
     (with-current-buffer (find-file-noselect
                           (expand-file-name org-file))
       (org-mode)
       (beginning-of-buffer)
       (while (and (search-forward url nil t) (org-on-heading-p))
-        (let* ((org-special-ctrl-a/e t)
-               (org-special-ctrl-k t)
-               (cur-tags (org-get-tags))
-               (cur-tags-str (org-get-tags-string))
-               (new-tags-str cur-tags-str))
-          (unless (member rmh-elfeed-org-ignore-tag cur-tags)
-            (progn
-              (if (s-prefix? ":" new-tags-str)
-                  (setq new-tags-str (concat new-tags-str rmh-elfeed-org-ignore-tag ":"))
-                (setq new-tags-str (concat new-tags-str ":" rmh-elfeed-org-ignore-tag ":")))
-              (beginning-of-line)
-              (org-end-of-line)
-              (when cur-tags
-                (org-kill-line))
-              (insert "        " new-tags-str)))))
-      (unless notsave
-        (save-buffer))
+              (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
       (message "Ignore invalid feed: %s" url))))
 
 
@@ -259,10 +247,12 @@ all.  Which in my opinion makes the process more traceable."
   (defadvice elfeed (before configure-elfeed activate)
     "Load all feed settings before elfeed is started."
     (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
-  (add-hook 'elfeed-http-error-hooks (lambda (url status) (when rmh-elfeed-org-auto-ignore-invalid-feeds
-                                                            (rmh-elfeed-org-mark-feed-ignore url))))
-  (add-hook 'elfeed-parse-error-hooks (lambda (url error) (when rmh-elfeed-org-auto-ignore-invalid-feeds
-                                                            (rmh-elfeed-org-mark-feed-ignore url)))))
+  (add-hook 'elfeed-http-error-hooks (lambda (url status)
+                                       (when rmh-elfeed-org-auto-ignore-invalid-feeds
+                                         (rmh-elfeed-org-mark-feed-ignore url))))
+  (add-hook 'elfeed-parse-error-hooks (lambda (url error)
+                                        (when rmh-elfeed-org-auto-ignore-invalid-feeds
+                                          (rmh-elfeed-org-mark-feed-ignore url)))))
 
 
 (provide 'elfeed-org)

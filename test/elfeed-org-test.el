@@ -91,13 +91,13 @@
   (xt-note "Mark special feed with tag ignore.")
   (xt-should (equal
               (let* ((rmh-elfeed-org-files '("test/fixture-mark-feed-ignore.org")))
-                (rmh-elfeed-org-mark-feed-ignore "http://invalidurl" 'notsave)
+                (rmh-elfeed-org-mark-feed-ignore "http://invalidurl")
                 (with-current-buffer (get-buffer "fixture-mark-feed-ignore.org")
                   (buffer-string)))
               "* tree1                                                              :elfeed:
-** http://invalidurl        :tag1:ignore:
+** http://invalidurl                                            :tag1:ignore:
 ** [[http://namedorgmodelink][namedorgmodelink]]
-** [[http://invalidurl]]        :ignore:
+** [[http://invalidurl]]                                             :ignore:
 ")))
 
 (xt-deftest rmh-elfeed-org-gets-inherited-tags2
