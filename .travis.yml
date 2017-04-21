@@ -13,17 +13,16 @@ env:
   # Therefore I don't support emacs-23
   # - EMACS=emacs23
 
-  # test the minimum supported requirements
   # 8.2.6 fails with (error "`recenter'ing a window that does not display current-buffer.")
-  - EVM_EMACS=emacs-24.4-bin ORG=release_8.2.7
+  - EVM_EMACS=emacs-25.1-travis ORG=release_8.2.7
 
   # test latest released emacs and org-mode
-  - EVM_EMACS=emacs-24.4-bin ORG=release_8.2.10
+  - EVM_EMACS=emacs-25.1-travis ORG=release_9.0.5
 
-  # test newest emacs with minimum supported org-mode
-  - EVM_EMACS=emacs-24.3-bin ORG=release_8.2.7
+  # test oldest supported emacs with minimum supported org-mode
+  - EVM_EMACS=emacs-24.3-travis ORG=release_8.2.7
 
-  # test newest emacs with latest released org-mode
-  - EVM_EMACS=emacs-24.3-bin ORG=release_8.2.10
+  # test oldest supported emacs with latest released org-mode
+  - EVM_EMACS=emacs-24.3-travis ORG=release_9.0.5
 script:
   - make test
