@@ -93,7 +93,7 @@ the feed url."
               (org-on-heading-p)
               (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
         (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
-      (message "Ignore invalid feed: %s" url))))
+      (elfeed-log 'info "elfeed-org tagged '%s' in file '%s' with '%s' to be ignored" url org-file rmh-elfeed-org-ignore-tag))))
 
 
 (defun rmh-elfeed-org-import-trees (tree-id)
@@ -220,7 +220,7 @@ all.  Which in my opinion makes the process more traceable."
     (-each taggers 'rmh-elfeed-org-export-entry-hook))
 
   ;; Tell user what we did
-  (message "elfeed-org loaded %i feeds, %i rules"
+  (elfeed-log 'info "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
            (length elfeed-new-entry-hook)))
 
@@ -251,7 +251,7 @@ all.  Which in my opinion makes the process more traceable."
 (defun elfeed-org ()
   "Hook up rmh-elfeed-org to read the `org-mode' configuration when elfeed is run."
   (interactive)
-  (message "elfeed-org is set up to handle elfeed configuration.")
+  (elfeed-log 'info "elfeed-org is set up to handle elfeed configuration")
   ;; Use an advice to load the configuration.
   (defadvice elfeed (before configure-elfeed activate)
     "Load all feed settings before elfeed is started."
