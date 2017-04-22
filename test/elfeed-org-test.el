@@ -94,10 +94,13 @@
                 (rmh-elfeed-org-mark-feed-ignore "http://invalidurl")
                 (with-current-buffer (get-buffer "fixture-mark-feed-ignore.org")
                   (buffer-string)))
-              "* tree1 :elfeed:
+
+              "* elfeed tree :elfeed:
 ** http://invalidurl :tag1:ignore:
 ** [[http://namedorgmodelink][namedorgmodelink]]
 ** [[http://invalidurl]] :ignore:
+* other tree
+** http://invalidurl
 ")))
 
 (xt-deftest rmh-elfeed-org-gets-inherited-tags2
@@ -173,6 +176,6 @@
                   (delete-region (point-min) (point-max))
                   (insert (org-element-interpret-data
                            (rmh-elfeed-org-flag-headlines parsed-org)))))
-              ("* tree1  :elfeed:\n-!-"
-               "* tree1                                                       :_flag_:elfeed:\n-!-"
+              ("* tree1 :elfeed:\n-!-"
+               "* tree1 :_flag_:elfeed:\n-!-"
                )))
