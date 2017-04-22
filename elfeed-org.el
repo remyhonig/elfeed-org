@@ -36,6 +36,7 @@
 (require 'org)
 (require 'dash)
 (require 's)
+(require 'rx)
 
 
 (defgroup elfeed-org nil
@@ -263,6 +264,41 @@ all.  Which in my opinion makes the process more traceable."
                                         (when rmh-elfeed-org-auto-ignore-invalid-feeds
                                           (rmh-elfeed-org-mark-feed-ignore url)))))
 
+(org-add-link-type "elfeed" 'org-elfeed-open)
+(add-hook 'org-store-link-functions 'org-elfeed-store-link)
+
+(defun org-elfeed-open (path)
+  "Visit the elfeed on PATH."
+  (string-match (rx bos
+                    "entry-feed:"
+                    (group (1+ any))
+                    ":entry-url:"
+                    (group (1+ any))
+                    eos)
+                path)
+  (let* ((entry-feed (match-string 1 path))
+         (entry-url (match-string 2 path))
+         (entry (gethash (cons entry-feed entry-url) elfeed-db-entries)))
+	(if entry
+		(elfeed-show-entry entry)
+	  (error "This entry isn't in the database"))))
+
+(defun org-elfeed-store-link ()
+  "Store a link to an elfeed entry."
+  (let ((entry (cond ((eq major-mode 'elfeed-search-mode)
+                      (elfeed-search-selected :ignore-region))
+                     ((eq major-mode 'elfeed-show-mode)
+                      elfeed-show-entry))))
+    (when entry
+      (let* ((id (elfeed-entry-id entry))
+             (feed (first id))
+             (url (rest id))
+             (title (elfeed-entry-title entry)))
+        (org-store-link-props
+         :type "elfeed"
+         :link (format "elfeed:entry-feed:%s:entry-url:%s"
+                       feed url)
+         :description title)))))
 
 (provide 'elfeed-org)
 ;;; elfeed-org.el ends here
