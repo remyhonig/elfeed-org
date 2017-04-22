@@ -71,19 +71,28 @@
     (error "Elfeed-org cannot open %s.  Make sure it exists customize the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))))
 
+(defun rmh-elfeed-org-is-headline-contained-in-elfeed-tree ()
+  "Is any ancestor a headline with the elfeed tree id.
+Return t if it does or nil if it does not."
+  (let ((result nil))
+    (save-excursion
+      (while (and (not result) (org-up-heading-safe))
+        (setq result (member rmh-elfeed-org-tree-id (org-get-tags))))
+    result)))
+
 (defun rmh-elfeed-org-mark-feed-ignore (url)
   "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing
-the feed url. Warning: this applies to all headlines. Not just
-the headlines within an elfeed tree. It would be nice to have
-this fixed one day. The worst case scenario is that the ignored
-tag is toggled on a headline that is not within an elfeed tree."
+the feed url."
   (dolist (org-file rmh-elfeed-org-files)
     (with-current-buffer (find-file-noselect
                           (expand-file-name org-file))
       (org-mode)
       (beginning-of-buffer)
-      (while (and (search-forward url nil t) (org-on-heading-p))
-              (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
+      (while (and
+              (search-forward url nil t)
+              (org-on-heading-p)
+              (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
+        (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
       (message "Ignore invalid feed: %s" url))))
 
 
