@@ -5,7 +5,7 @@
 ;; Author           : Remy Honig <remyhonig@gmail.com>
 ;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (dash "2.10.0") (s "1.9.0"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
-;; Version          : 20160814.1
+;; Version          : 20170422.1
 ;; Keywords         : news
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,16 @@
   :group 'elfeed-org
   :type 'string)
 
+(defcustom rmh-elfeed-org-ignore-tag "ignore"
+  "The tag on the feed trees that will be ignored."
+  :group 'elfeed-org
+  :type 'string)
+
+(defcustom rmh-elfeed-org-auto-ignore-invalid-feeds nil
+  "If non-nil, elfeed-org will mark the invalid feeds ignored
+  after fetch operation."
+  :group 'elfeed-org
+  :type 'bool)
 
 (defcustom rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
   "The files where we look to find trees with the `rmh-elfeed-org-tree-id'."
@@ -60,6 +70,30 @@
   (when (not (file-exists-p file))
     (error "Elfeed-org cannot open %s.  Make sure it exists customize the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))))
+
+(defun rmh-elfeed-org-is-headline-contained-in-elfeed-tree ()
+  "Is any ancestor a headline with the elfeed tree id.
+Return t if it does or nil if it does not."
+  (let ((result nil))
+    (save-excursion
+      (while (and (not result) (org-up-heading-safe))
+        (setq result (member rmh-elfeed-org-tree-id (org-get-tags))))
+    result)))
+
+(defun rmh-elfeed-org-mark-feed-ignore (url)
+  "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing
+the feed url."
+  (dolist (org-file rmh-elfeed-org-files)
+    (with-current-buffer (find-file-noselect
+                          (expand-file-name org-file))
+      (org-mode)
+      (beginning-of-buffer)
+      (while (and
+              (search-forward url nil t)
+              (org-on-heading-p)
+              (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
+        (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
+      (elfeed-log 'info "elfeed-org tagged '%s' in file '%s' with '%s' to be ignored" url org-file rmh-elfeed-org-ignore-tag))))
 
 
 (defun rmh-elfeed-org-import-trees (tree-id)
@@ -117,7 +151,9 @@ all.  Which in my opinion makes the process more traceable."
   "Filter relevant entries from the LIST."
   (-filter
    (lambda (entry)
-     (string-match "\\(http\\|entry-title\\)" (car entry)))
+     (and
+      (string-match "\\(http\\|entry-title\\)" (car entry))
+      (not (member (intern rmh-elfeed-org-ignore-tag) entry))))
    list))
 
 
@@ -184,7 +220,7 @@ all.  Which in my opinion makes the process more traceable."
     (-each taggers 'rmh-elfeed-org-export-entry-hook))
 
   ;; Tell user what we did
-  (message "elfeed-org loaded %i feeds, %i rules"
+  (elfeed-log 'info "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
            (length elfeed-new-entry-hook)))
 
@@ -215,11 +251,17 @@ all.  Which in my opinion makes the process more traceable."
 (defun elfeed-org ()
   "Hook up rmh-elfeed-org to read the `org-mode' configuration when elfeed is run."
   (interactive)
-  (message "elfeed-org is set up to handle elfeed configuration.")
+  (elfeed-log 'info "elfeed-org is set up to handle elfeed configuration")
   ;; Use an advice to load the configuration.
   (defadvice elfeed (before configure-elfeed activate)
     "Load all feed settings before elfeed is started."
-    (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id)))
+    (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
+  (add-hook 'elfeed-http-error-hooks (lambda (url status)
+                                       (when rmh-elfeed-org-auto-ignore-invalid-feeds
+                                         (rmh-elfeed-org-mark-feed-ignore url))))
+  (add-hook 'elfeed-parse-error-hooks (lambda (url error)
+                                        (when rmh-elfeed-org-auto-ignore-invalid-feeds
+                                          (rmh-elfeed-org-mark-feed-ignore url)))))
 
 
 (provide 'elfeed-org)
