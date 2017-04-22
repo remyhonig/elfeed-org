@@ -49,7 +49,7 @@ and every feed.
     *** Eclipse                                                         :eclipse:
     **** http://blog.eclipse-tips.com/feeds/posts/default?alt=rss
     **** http://ed-merks.blogspot.com/feeds/posts/default
-         A description of this feed can be written under any headline.
+         A description of a feed can be written under any headline.
          The text will be ignored by elfeed.
     **** http://feeds.feedburner.com/eclipselive                         :ignore:
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
