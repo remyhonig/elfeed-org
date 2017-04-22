@@ -81,6 +81,28 @@
               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-one-tag.org" "test/fixture-one-id-no-feeds.org") "elfeed")
               '(("http1" tag1) ("http2")))))
 
+(xt-deftest rmh-elfeed-org-import-headlines-and-ignore-tags
+  (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and not match the \"ignore\" tag and inherited their parent's tags")
+  (xt-should (equal
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-ignore-tag.org") "elfeed")
+              '(("http1" tag1) ("http3" tag3)))))
+
+(xt-deftest rmh-elfeed-org-mark-feed-ignore
+  (xt-note "Mark special feed with tag ignore.")
+  (xt-should (equal
+              (let* ((rmh-elfeed-org-files '("test/fixture-mark-feed-ignore.org")))
+                (rmh-elfeed-org-mark-feed-ignore "http://invalidurl")
+                (with-current-buffer (get-buffer "fixture-mark-feed-ignore.org")
+                  (buffer-string)))
+
+              "* elfeed tree :elfeed:
+** http://invalidurl :tag1:ignore:
+** [[http://namedorgmodelink][namedorgmodelink]]
+** [[http://invalidurl]] :ignore:
+* other tree
+** http://invalidurl
+")))
+
 (xt-deftest rmh-elfeed-org-gets-inherited-tags2
   (xt-note "Get all headlines with inherited tags")
   (xtd-return= (lambda (_) (progn (org-mode)
@@ -154,8 +176,8 @@
                   (delete-region (point-min) (point-max))
                   (insert (org-element-interpret-data
                            (rmh-elfeed-org-flag-headlines parsed-org)))))
-              ("* tree1  :elfeed:\n-!-"
-               "* tree1                                                       :_flag_:elfeed:\n-!-"
+              ("* tree1 :elfeed:\n-!-"
+               "* tree1 :_flag_:elfeed:\n-!-"
                )))
 
 (xt-deftest rmh-elfeed-org-import-opml

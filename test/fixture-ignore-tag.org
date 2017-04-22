@@ -1,0 +1,6 @@
+* tree1                                                              :elfeed:
+** http1                                                               :tag1:
+** ignore subtree                                                    :ignore:
+*** http2                                                               :tag2:
+** http3                                                               :tag3:
+** http4                                                        :ignore:tag4:
