@@ -61,6 +61,11 @@ Some highlights:
 * `entry-title: \(emacs\|org-mode\)` Tags any blog post with "emacs" or "org-mode" in the title according to it's given and inherited tags (in the example above "emacs", "mustread" and "dev").
 * `http://feeds.feedburner.com/eclipselive :ignore:` The "ignore" excludes the feed completely from your checked subscriptions. You can use another name for "ignore" by customizing `rmh-elfeed-org-ignore-tag`. These "ignore" tags are set by elfeed-org automatically on feed errors (wrong urls or renamed feeds for example) if `rmh-elfeed-org-auto-ignore-invalid-feeds` is set to `t`.
 
+## Import/Export OPML
+
+Use `elfeed-org-export-opml` to export the tree structure of feeds to OPML format to a temporary buffer. This will allow you to make edits before saving it. You will probabably want to do this because most readers don't allow more than 2 levels while elfeed-org has no limit.
+
+Use `elfeed-org-import-opml` to import an OPML file to an elfeed-org structured tree.
 
 ## The Configuration Tree
 
