@@ -179,3 +179,43 @@
               ("* tree1 :elfeed:\n-!-"
                "* tree1 :_flag_:elfeed:\n-!-"
                )))
+
+(xt-deftest rmh-elfeed-org-import-opml
+  (xt-note "Import from OPML.")
+  (xt-should (equal
+              (let* ((rmh-elfeed-org-files '("test/fixture-export.org")))
+                (elfeed-org-export-opml)
+                (with-current-buffer "*Exported OPML Feeds*" (buffer-string)))
+              "<?xml version=\"1.0\"?>
+<opml version=\"1.0\">
+  <head>
+    <title>Elfeed-Org Export</title>
+  </head>
+  <body>
+      <outline title=\"Unknown\" xmlUrl=\"http://url\"/>
+      <outline title=\"namedorgmodelink\" xmlUrl=\"http://namedorgmodelink\"/>
+      <outline title=\"linkwithspecialcode\" xmlUrl=\"http://linkwith&amp;specialcode\"/>
+      <outline title=\"folder1\">
+        <outline title=\"Unknown\" xmlUrl=\"http://unnamedorgmodelink\"/>
+      </outline>
+      <outline title=\"folder2\">
+        <outline title=\"Unknown\" xmlUrl=\"http://url\"/>
+      </outline>
+  </body>
+</opml>
+")))
+
+(xt-deftest rmh-elfeed-org-export-opml
+  (xt-note "Export to OPML.")
+  (xt-should (equal
+              (progn
+                (elfeed-org-import-opml "test/fixture-import.opml")
+                (with-current-buffer "*Imported Org Feeds*" (buffer-string)))
+              "* Imported Feeds            :elfeed:
+** [[http://url][url]]
+** [[http://namedorgmodelink][namedorgmodelink]]
+** folder1
+*** [[http://unnamedorgmodelink][url1]]
+** folder2
+*** [[http://url][url2]]
+")))

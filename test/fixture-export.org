@@ -1,0 +1,13 @@
+* tree1                                                              :elfeed:
+:PROPERTIES:
+:ID: elfeed
+:END:
+** entry-title: \(linux\|gnome\)
+** http://url                                                          :tag1:
+** [[http://namedorgmodelink][namedorgmodelink]]
+** [[http://linkwith&specialcode][linkwithspecialcode]]
+** folder1
+*** [[http://unnamedorgmodelink]]
+* tree2                                                              :elfeed:
+** folder2                                                             :tag3:
+*** http://url                                                         :tag1:

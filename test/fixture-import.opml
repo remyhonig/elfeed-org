@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<opml version="1.0">
+  <head>
+    <title>Elfeed-Org Export</title>
+  </head>
+  <body>
+    <outline title="url" xmlUrl="http://url"/>
+    <outline title="namedorgmodelink" xmlUrl="http://namedorgmodelink"/>
+    <outline title="folder1">
+      <outline title="url1" xmlUrl="http://unnamedorgmodelink"/>
+    </outline>
+    <outline title="folder2">
+      <outline title="url2" xmlUrl="http://url"/>
+    </outline>
+  </body>
+</opml>
