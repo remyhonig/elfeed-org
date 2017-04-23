@@ -5,7 +5,7 @@
 ;; Author           : Remy Honig <remyhonig@gmail.com>
 ;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (dash "2.10.0") (s "1.9.0") (cl-lib "0.5"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
-;; Version          : 20170422.2
+;; Version          : 20170423.1
 ;; Keywords         : news
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -56,8 +56,7 @@
   :type 'string)
 
 (defcustom rmh-elfeed-org-auto-ignore-invalid-feeds nil
-  "If non-nil, elfeed-org will mark the invalid feeds ignored
-  after fetch operation."
+  "Tag feeds to ignore them when a feed could not loaded."
   :group 'elfeed-org
   :type 'bool)
 
@@ -83,8 +82,7 @@ Return t if it does or nil if it does not."
     result)))
 
 (defun rmh-elfeed-org-mark-feed-ignore (url)
-  "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing
-the feed url."
+  "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing the feed URL."
   (dolist (org-file rmh-elfeed-org-files)
     (with-current-buffer (find-file-noselect
                           (expand-file-name org-file))
@@ -250,7 +248,9 @@ all.  Which in my opinion makes the process more traceable."
 
 
 (defun rmh-elfeed-org-convert-opml-to-org (xml level)
-  "Convert OPML content to Org format."
+  "Convert OPML content to Org format.
+Argument XML content of the OPML file.
+Argument LEVEL current level in the tree."
   (cl-loop for (tag attr . content) in (cl-remove-if-not #'listp xml)
            when (and (not (assoc 'xmlUrl attr)) (assoc 'title attr))
            concat (format "%s %s\n" (make-string level ?*) (cdr it))
@@ -260,7 +260,8 @@ all.  Which in my opinion makes the process more traceable."
            concat (rmh-elfeed-org-convert-opml-to-org content (+ 1 level))))
 
 (defun elfeed-org-import-opml (opml-file)
-  "Import feeds from OPML file to a temporary Org buffer."
+  "Import feeds from OPML file to a temporary Org buffer.
+Argument OPML-FILE filename of the OPML file."
   (interactive "FInput OPML file: ")
   (let* ((xml (xml-parse-file opml-file))
         (content (rmh-elfeed-org-convert-opml-to-org xml 0)))
@@ -273,7 +274,8 @@ all.  Which in my opinion makes the process more traceable."
 
 
 (defun rmh-elfeed-org-convert-org-to-opml (org-buffer)
-  "Convert Org buffer content to OPML format."
+  "Convert Org buffer content to OPML format.
+Argument ORG-BUFFER the buffer to write the OPML content to."
   (let (need-ends
         opml-body)
     (with-current-buffer org-buffer
@@ -297,11 +299,11 @@ all.  Which in my opinion makes the process more traceable."
 
             (cond ((s-starts-with? "http" heading)
                    (setq url heading)
-                   (setq title "Unknown"))
+                   (setq title (or (elfeed-feed-title (elfeed-db-get-feed heading)) "Unknown")))
                   (link-and-title (setq url (nth 1 link-and-title))
                                   (setq title (nth 2 link-and-title)))
                   (hyperlink (setq url (nth 1 hyperlink))
-                             (setq title "Unknown"))
+                             (setq title (or (elfeed-feed-title (elfeed-db-get-feed (nth 1 hyperlink))) "Unknown")))
                   (t (setq title heading)))
             (if url
                 (setq opml-outline (format "  %s<outline title=\"%s\" xmlUrl=\"%s\"/>\n"
@@ -326,11 +328,9 @@ all.  Which in my opinion makes the process more traceable."
     opml-body))
 
 (defun elfeed-org-export-opml ()
-  "Export Org feeds under `rmh-elfeed-org-files' to a temporary
-  OPML buffer with tree structures. Note that the first level
-  elfeed node will be ignored if there is not url for it, and
-  user may need edit the output again because most of Feed/RSS
-  readers only support maximize 2 level tree nodes."
+  "Export Org feeds under `rmh-elfeed-org-files' to a temporary OPML buffer.
+The first level elfeed node will be ignored. The user may need edit the output
+because most of Feed/RSS readers only support trees of 2 levels deep."
   (interactive)
   (let ((opml-body (cl-loop for org-file in rmh-elfeed-org-files
                              concat (rmh-elfeed-org-convert-org-to-opml

@@ -180,8 +180,8 @@
                "* tree1 :_flag_:elfeed:\n-!-"
                )))
 
-(xt-deftest rmh-elfeed-org-import-opml
-  (xt-note "Import from OPML.")
+(xt-deftest rmh-elfeed-org-export-opml
+  (xt-note "Export to OPML.")
   (xt-should (equal
               (let* ((rmh-elfeed-org-files '("test/fixture-export.org")))
                 (elfeed-org-export-opml)
@@ -205,8 +205,8 @@
 </opml>
 ")))
 
-(xt-deftest rmh-elfeed-org-export-opml
-  (xt-note "Export to OPML.")
+(xt-deftest rmh-elfeed-org-import-opml
+  (xt-note "Import from OPML.")
   (xt-should (equal
               (progn
                 (elfeed-org-import-opml "test/fixture-import.opml")
