@@ -124,7 +124,8 @@ all.  Which in my opinion makes the process more traceable."
       (lambda (h)
         (let* ((current-level (org-element-property :level h))
                (delta-level (- current-level level))
-               (delta-tags (mapcar 'intern (org-element-property :tags h)))
+               (delta-tags (--map (intern (substring-no-properties it))
+                                  (org-element-property :tags h)))
                (heading (org-element-property :raw-value h)))
           ;; update the tags stack when we visit a parent or sibling
           (unless (> delta-level 0)
