@@ -2,7 +2,7 @@ language: emacs-lisp
 before_install:
   - curl -fsSkL https://gist.github.com/rejeep/ebcd57c3af83b049833b/raw > x.sh && source ./x.sh
   - cask
-  - git clone git://orgmode.org/org-mode.git && cd org-mode && git checkout ${ORG} && make autoloads && cd ..
+  - git clone https://code.orgmode.org/bzg/org-mode.git && cd org-mode && git checkout ${ORG} && make autoloads && cd ..
 env:
   # I want to use Cask to gather dependencies
   # Cask does not support Emacs 23.
@@ -10,10 +10,10 @@ env:
   # - EMACS=emacs23
 
   # 8.2.6 fails with (error "`recenter'ing a window that does not display current-buffer.")
-  - EVM_EMACS=emacs-25.1-travis ORG=release_8.2.7
+  - EVM_EMACS=emacs-25.3-travis ORG=release_8.2.7
 
   # test latest released emacs and org-mode
-  - EVM_EMACS=emacs-25.1-travis ORG=release_9.0.5
+  - EVM_EMACS=emacs-25.3-travis ORG=release_9.0.5
 
   # test oldest supported emacs with minimum supported org-mode
   - EVM_EMACS=emacs-24.3-travis ORG=release_8.2.7
