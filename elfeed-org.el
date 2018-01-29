@@ -65,6 +65,8 @@
   :group 'elfeed-org
   :type '(repeat (file :tag "org-mode file")))
 
+(defvar elfeed-org-new-entry-hook nil
+  "List of new-entry tagger hooks created by elfeed-org.")
 
 (defun rmh-elfeed-org-check-configuration-file (file)
   "Make sure FILE exists."
@@ -188,7 +190,7 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun rmh-elfeed-org-export-entry-hook (tagger-params)
   "Export TAGGER-PARAMS to the proper `elfeed' structure."
-  (add-hook 'elfeed-new-entry-hook
+  (add-hook 'elfeed-org-new-entry-hook
             (elfeed-make-tagger
              :entry-title (nth 0 tagger-params)
              :add (nth 1 tagger-params))))
@@ -212,7 +214,7 @@ all.  Which in my opinion makes the process more traceable."
 
   ;; Clear elfeed structures
   (setq elfeed-feeds nil)
-  (setq elfeed-new-entry-hook nil)
+  (setq elfeed-org-new-entry-hook nil)
 
   ;; Convert org structure to elfeed structure and register taggers and subscriptions
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
@@ -226,8 +228,12 @@ all.  Which in my opinion makes the process more traceable."
   ;; Tell user what we did
   (elfeed-log 'info "elfeed-org loaded %i feeds, %i rules"
            (length elfeed-feeds)
-           (length elfeed-new-entry-hook)))
+           (length elfeed-org-new-entry-hook)))
 
+(defun elfeed-org-run-new-entry-hook (entry)
+  "Run ENTRY through elfeed-org taggers."
+  (--each elfeed-org-new-entry-hook
+    (funcall it entry)))
 
 (defun rmh-elfeed-org-filter-taggers (headlines)
   "Filter tagging rules from the HEADLINES in the tree."
@@ -363,6 +369,7 @@ because most of Feed/RSS readers only support trees of 2 levels deep."
   (defadvice elfeed (before configure-elfeed activate)
     "Load all feed settings before elfeed is started."
     (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
+  (add-hook 'elfeed-new-entry-hook #'elfeed-org-run-new-entry-hook)
   (add-hook 'elfeed-http-error-hooks (lambda (url status)
                                        (when rmh-elfeed-org-auto-ignore-invalid-feeds
                                          (rmh-elfeed-org-mark-feed-ignore url))))
