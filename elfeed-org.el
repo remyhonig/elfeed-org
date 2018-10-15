@@ -71,7 +71,7 @@
 (defun rmh-elfeed-org-check-configuration-file (file)
   "Make sure FILE exists."
   (when (not (file-exists-p file))
-    (error "Elfeed-org cannot open %s.  Make sure it exists customize the variable \'rmh-elfeed-org-files\'"
+    (error "Elfeed-org cannot open %s.  Make sure it exists or customize the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))))
 
 (defun rmh-elfeed-org-is-headline-contained-in-elfeed-tree ()
