@@ -1,3 +1,4 @@
+#+link: abbrv http://abbreviated
 * tree1                                                                             :tag3:
 :PROPERTIES:
 :ID: elfeed
@@ -7,3 +8,4 @@
 ** http://url                                                                       :tag1:
 ** [[http://namedorgmodelink][namedorgmodelink]]
 ** [[http://unnamedorgmodelink]]
+** [[abbrv:link][abbreviatedlink]]

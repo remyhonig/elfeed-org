@@ -48,14 +48,14 @@
               (rmh-elfeed-org-convert-headline-to-tagger-params '("entry-title: \\(apple\\)" tag3 tag4))
               '("\\(apple\\)" (tag3 tag4)))))
 
-(xt-deftest rmh-elfeed-org-filter-subscriptions
+(xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Make sure all types of headlines are recognized")
   (xt-should (equal
-              (rmh-elfeed-org-filter-subscriptions
-               (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed"))
+              (rmh-elfeed-org-import-headlines-from-files '("test/fixture-feed-formats.org") "elfeed")
               '(("http://url" tag3 tag1)
                 ("http://namedorgmodelink" tag3 "namedorgmodelink")
-                ("http://unnamedorgmodelink" tag3)))))
+                ("http://unnamedorgmodelink" tag3)
+                ("http://abbreviatedlink" tag3 "abbreviatedlink")))))
 
 (xt-deftest rmh-elfeed-org-import-headlines-from-files
   (xt-note "Use all feeds in a multiple trees tagged with the \"elfeed\" tag and inherited their parent's tags")
