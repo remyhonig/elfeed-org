@@ -60,7 +60,7 @@
   :group 'elfeed-org
   :type 'bool)
 
-(defcustom rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")
+(defcustom rmh-elfeed-org-files (list (locate-user-emacs-file "elfeed.org"))
   "The files where we look to find trees with the `rmh-elfeed-org-tree-id'."
   :group 'elfeed-org
   :type '(repeat (file :tag "org-mode file")))
