@@ -158,7 +158,7 @@ all.  Which in my opinion makes the process more traceable."
   (-filter
    (lambda (entry)
      (and
-      (string-match "\\(http\\|entry-title\\)" (car entry))
+      (string-match "\\(http\\|file\\|entry-title\\)" (car entry))
       (not (member (intern rmh-elfeed-org-ignore-tag) entry))))
    list))
 
@@ -247,9 +247,11 @@ all.  Which in my opinion makes the process more traceable."
   (-non-nil (-map
              (lambda (headline)
                (let* ((text (car headline))
-                      (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
-                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
-                 (cond ((s-starts-with? "http" text) headline)
+                      (link-and-title (s-match "^\\[\\[\\(http.+?\\|file.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
+                      (hyperlink (s-match "^\\[\\[\\(http.+?\\|file.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                 (cond ((or (s-starts-with? "http" text)
+                            (s-starts-with? "file" text))
+                        headline)
                        (link-and-title (-concat (list (nth 1 hyperlink))
                                                 (cdr headline)
                                                 (list (nth 2 link-and-title))))
@@ -296,8 +298,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
           (let* ((current-level (org-element-property :level h))
                  (tags (org-element-property :tags h))
                  (heading (org-element-property :raw-value h))
-                 (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading))
-                 (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading))
+                 (link-and-title (s-match "^\\[\\[\\(http.+?\\|file.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading))
+                 (hyperlink (s-match "^\\[\\[\\(http.+?\\|file.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading))
                  url
                  title
                  opml-outline)
@@ -307,7 +309,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
                 (setq opml-body (concat opml-body (format "  %s</outline>\n"
                                                           (make-string (* 2 level) ? ))))))
 
-            (cond ((s-starts-with? "http" heading)
+            (cond ((or (s-starts-with? "http" heading)
+                       (s-starts-with? "file" heading))
                    (setq url heading)
                    (setq title (or (elfeed-feed-title (elfeed-db-get-feed heading)) "Unknown")))
                   (link-and-title (setq url (nth 1 link-and-title))
