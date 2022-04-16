@@ -116,17 +116,8 @@ A few tips for the org-mode feed configuration:
 # Installation
 
 ## Requirements
-[![Travis](https://travis-ci.org/remyhonig/elfeed-org.svg)](https://travis-ci.org/remyhonig/elfeed-org)
 
-This package is automatically tested for the following combinations of
-versions, so you can assume `elfeed-org` will work for them.
-
-| org-mode | emacs |
-|----------|-------|
-| 8.2.7    | 25.1  |
-| 9.0.5    | 25.1  |
-| 8.2.7    | 24.3  |
-| 9.0.5    | 24.3  |
+Runs on emacs versions specified in `.github/workflows/ci.yml`
 
 This package needs `org-mode 8.2.7` to run properly if you use the `emacs-24` distribution. The reason that that org-mode version is needed is because `org-mode 8.2.6` - at least in combination with `GNU Emacs 24.4.50.1` - causes the error `(error "recenter'ing a window that does not display current-buffer.")`.
 
@@ -172,3 +163,7 @@ In your initialization script add the following:
     ;; configuration. If not set then the location below is used.
     ;; Note: The customize interface is also supported.
     (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org"))
+    
+# Feature requests and bug fixes
+
+I appreciate feature requests and code snippets provided to fix things, but I really don't have much spare time nowadays. If you'd like to add a feature or fix a bug, please post a pull requests and I will merge it right away if has a corresponding test and an update of the README if applicable. I just migrated the CI from Travis - which was not functional anymore - to Github Action so this should be a faster process now. And to close off: a big thank you to all PR authors and issue submitters!
