@@ -127,11 +127,23 @@ all.  Which in my opinion makes the process more traceable."
          (level 1))
     (org-element-map parsed-org 'headline
       (lambda (h)
-        (let* ((current-level (org-element-property :level h))
-               (delta-level (- current-level level))
-               (delta-tags (--map (intern (substring-no-properties it))
-                                  (org-element-property :tags h)))
-               (heading (org-element-property :raw-value h)))
+        (pcase-let*
+            ((current-level (org-element-property :level h))
+             (delta-level (- current-level level))
+             (delta-tags (--map (intern (substring-no-properties it))
+                                (org-element-property :tags h)))
+             (heading (org-element-property :raw-value h))
+             (`(,link ,description)
+              (org-element-map (org-element-property :title h) 'link
+                (lambda (link)
+                  (list
+                   (org-element-property :raw-link link)
+                   (when (and (org-element-property :contents-begin link)
+                              (org-element-property :contents-end link))
+                     (buffer-substring
+                      (org-element-property :contents-begin link)
+                      (org-element-property :contents-end link)))))
+                nil t)))
           ;; update the tags stack when we visit a parent or sibling
           (unless (> delta-level 0)
             (let ((drop-num (+ 1 (- delta-level))))
@@ -141,8 +153,12 @@ all.  Which in my opinion makes the process more traceable."
           ;; save the tags that might apply to potential children of the current heading
           (push (-concat (-first-item tags) delta-tags) tags)
           ;; return the heading and inherited tags
-          (-concat (list heading)
-                   (-first-item tags)))))))
+          (if (and link description)
+              (-concat (list link)
+                       (-first-item tags)
+                       (list description))
+            (-concat (list (if link link heading))
+                     (-first-item tags))))))))
 
 ;; TODO: mark wrongly formatted feeds (PoC for unretrievable feeds)
 (defun rmh-elfeed-org-flag-headlines (parsed-org)
@@ -218,11 +234,10 @@ all.  Which in my opinion makes the process more traceable."
 
   ;; Convert org structure to elfeed structure and register taggers and subscriptions
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
-         (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
          (taggers (rmh-elfeed-org-filter-taggers headlines))
          (elfeed-taggers (-map 'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
          (elfeed-tagger-hooks (-map 'rmh-elfeed-org-export-entry-hook elfeed-taggers)))
-    (-each subscriptions 'rmh-elfeed-org-export-feed)
+    (-each headlines 'rmh-elfeed-org-export-feed)
     (-each taggers 'rmh-elfeed-org-export-entry-hook))
 
   ;; Tell user what we did
@@ -241,21 +256,6 @@ all.  Which in my opinion makes the process more traceable."
              (lambda (headline)
                (when (s-starts-with? "entry-title" (car headline)) headline))
              headlines)))
-
-(defun rmh-elfeed-org-filter-subscriptions (headlines)
-  "Filter subscriptions to rss feeds from the HEADLINES in the tree."
-  (-non-nil (-map
-             (lambda (headline)
-               (let* ((text (car headline))
-                      (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
-                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
-                 (cond ((s-starts-with? "http" text) headline)
-                       (link-and-title (-concat (list (nth 1 hyperlink))
-                                                (cdr headline)
-                                                (list (nth 2 link-and-title))))
-                       (hyperlink (-concat (list (nth 1 hyperlink)) (cdr headline))))))
-             headlines)))
-
 
 (defun rmh-elfeed-org-convert-opml-to-org (xml level)
   "Convert OPML content to Org format.

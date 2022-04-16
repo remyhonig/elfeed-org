@@ -42,6 +42,7 @@ and every feed.
     **** http://nullprogram.com/feed
     **** entry-title: \(emacs\|org-mode\)
     **** http://planet.emacsen.org/atom.xml
+    **** [[toobnix:154][EmacsConf]]
     *** Web Development                                                     :web:
     **** http://planet.phpunit.de/atom.xml
     **** http://feeds.feedburner.com/symfony/blog
@@ -53,6 +54,7 @@ and every feed.
          The text will be ignored by elfeed.
     **** http://feeds.feedburner.com/eclipselive                         :ignore:
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
+    #+link toobnix https://toobnix.org/feeds/videos.xml?videoChannelId=
 
 
 Some highlights:
