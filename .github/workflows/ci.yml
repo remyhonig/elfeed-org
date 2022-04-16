@@ -31,4 +31,4 @@ jobs:
         with:
           version: snapshot
       - run: echo "$HOME/.cask/bin" >> $GITHUB_PATH
-      - run: make test
+      - run: make all
