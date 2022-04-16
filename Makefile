@@ -17,7 +17,7 @@ build:
 	EMACS=${EMACS} $(CASK) build
 
 test:
-	EMACS=${EMACS} $(CASK) exec ert-runner ${LOAD-ORGMODE}
+	EMACS=${EMACS} $(CASK) exec ert-runner 
 
 clean:
 	EMACS=${EMACS} $(CASK) clean-elc
