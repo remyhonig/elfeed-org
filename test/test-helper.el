@@ -1,6 +1,3 @@
-;; Remove standard org-mode paths so I can supply them with my own
-;; using the "cask exec ert-runner -L org-mode/lisp" command
-(setq load-path (-remove (lambda (path) (s-ends-with? "lisp/org" path)) load-path))
 (message "Org version: %s on Emacs version: %s" (org-version) (emacs-version))
 
 (require 'xtest)
