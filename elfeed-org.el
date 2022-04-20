@@ -318,7 +318,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
             (if url
                 (setq opml-outline (format "  %s<outline title=\"%s\" xmlUrl=\"%s\"/>\n"
                                            (make-string (* 2 current-level) ? )
-                                           title (xml-escape-string url)))
+                                           (xml-escape-string title)
+                                           (xml-escape-string url)))
               (unless (s-starts-with? "entry-title" heading)
                 (unless (member rmh-elfeed-org-tree-id tags)
                   ;; insert category title only when it is neither the top
@@ -327,7 +328,7 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
                     (push current-level need-ends)
                     (setq opml-outline (format "  %s<outline title=\"%s\">\n"
                                                (make-string (* 2 current-level) ? )
-                                               title))))))
+                                               (xml-escape-string title)))))))
             (setq opml-body (concat opml-body opml-outline))))))
 
     ;; fill missing end outlines at end
