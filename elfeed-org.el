@@ -34,6 +34,7 @@
 
 (require 'elfeed)
 (require 'org)
+(require 'org-element)
 (require 'dash)
 (require 's)
 (require 'cl-lib)
