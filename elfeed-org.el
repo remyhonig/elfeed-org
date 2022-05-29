@@ -218,8 +218,9 @@ all.  Which in my opinion makes the process more traceable."
            (> (length headline) 1))
       (progn
         (add-to-list 'elfeed-feeds (butlast headline))
-        (let ((feed (elfeed-db-get-feed (car headline))))
-          (setf (elfeed-meta feed :title) (car (last headline)))
+        (let ((feed (elfeed-db-get-feed (car headline)))
+              (title (substring-no-properties (car (last headline)))))
+          (setf (elfeed-meta feed :title) title)
           (elfeed-meta feed :title)))
     (add-to-list 'elfeed-feeds headline)))
 
