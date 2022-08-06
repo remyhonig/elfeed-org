@@ -126,7 +126,7 @@ The minimum version of org-mode that is minimally needed to even run is `org-mod
 ## Spacemacs
 [![Built with Spacemacs](https://cdn.rawgit.com/syl20bnr/spacemacs/442d025779da2f62fc86c2082703697714db6514/assets/spacemacs-badge.svg)](http://spacemacs.org)
 
-This package is part of the excellent (Spacemacs)[http://spacemacs.org/]. See [Elfeed Layer Documentation](http://spacemacs.org/layers/+web-services/elfeed/README.html) for installation instructions.
+This package is part of the excellent [Spacemacs](http://spacemacs.org/). See [Elfeed Layer Documentation](http://spacemacs.org/layers/+web-services/elfeed/README.html) for installation instructions.
 
 ## Through MELPA
 [![MELPA](http://melpa.org/packages/elfeed-org-badge.svg)](http://melpa.org/#/elfeed-org)
