@@ -252,6 +252,22 @@ all.  Which in my opinion makes the process more traceable."
   (--each elfeed-org-new-entry-hook
     (funcall it entry)))
 
+(defun rmh-elfeed-apply-autotags-now-advice ()
+  "Make entry title matching rules works with `elfeed-apply-autotags-now'."
+  (interactive)
+  (let* ((headlines (rmh-elfeed-org-import-headlines-from-files
+                     rmh-elfeed-org-files rmh-elfeed-org-tree-id))
+         (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
+         (taggers (rmh-elfeed-org-filter-taggers headlines))
+         (elfeed-taggers (-map 'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
+         (entry-match-taggers (-map (lambda (tagger-params)
+                                      (elfeed-make-tagger
+                                       :entry-title (nth 0 tagger-params)
+                                       :add (nth 1 tagger-params))) elfeed-taggers)))
+    (with-elfeed-db-visit (entry feed)
+                          (dolist (tagger entry-match-taggers)
+                            (funcall tagger entry)))))
+
 (defun rmh-elfeed-org-filter-taggers (headlines)
   "Filter tagging rules from the HEADLINES in the tree."
   (-non-nil (-map
@@ -373,6 +389,7 @@ because most of Feed/RSS readers only support trees of 2 levels deep."
     "Load all feed settings before elfeed is started."
     (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
   (add-hook 'elfeed-new-entry-hook #'elfeed-org-run-new-entry-hook)
+  (advice-add 'elfeed-apply-autotags-now :after #'rmh-elfeed-apply-autotags-now-advice)
   (add-hook 'elfeed-http-error-hooks (lambda (url status)
                                        (when rmh-elfeed-org-auto-ignore-invalid-feeds
                                          (rmh-elfeed-org-mark-feed-ignore url))))
