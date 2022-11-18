@@ -175,7 +175,7 @@ all.  Which in my opinion makes the process more traceable."
   (-filter
    (lambda (entry)
      (and
-      (string-match "\\(http\\|entry-title\\)" (car entry))
+      (string-match "\\(http\\|gopher\\|file\\|entry-title\\)" (car entry))
       (not (member (intern rmh-elfeed-org-ignore-tag) entry))))
    list))
 
