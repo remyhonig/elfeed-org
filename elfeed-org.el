@@ -259,7 +259,8 @@ all.  Which in my opinion makes the process more traceable."
 (defun rmh-elfeed-apply-autotags-now-advice ()
   "Make entry title matching rules works with `elfeed-apply-autotags-now'."
   (interactive)
-  (let* ((headlines (rmh-elfeed-org-import-headlines-from-files rmh-elfeed-org-files tree-id))
+  (let* ((headlines (rmh-elfeed-org-import-headlines-from-files
+                     rmh-elfeed-org-files rmh-elfeed-org-tree-id))
          (taggers (rmh-elfeed-org-filter-taggers headlines))
          (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
          (entry-match-taggers (mapcar (lambda (tagger-params)
