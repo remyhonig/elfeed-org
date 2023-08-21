@@ -87,7 +87,8 @@ Return t if it does or nil if it does not."
   (dolist (org-file rmh-elfeed-org-files)
     (with-current-buffer (find-file-noselect
                           (expand-file-name org-file))
-      (org-mode)
+      (let ((org-inhibit-startup t))
+        (org-mode))
       (goto-char (point-min))
       (while (and
               (search-forward url nil t)
@@ -189,7 +190,8 @@ all.  Which in my opinion makes the process more traceable."
   (cl-remove-duplicates
    (mapcan (lambda (file)
              (with-current-buffer (find-file-noselect (expand-file-name file))
-               (org-mode)
+               (let ((org-inhibit-startup t))
+                 (org-mode))
                (rmh-elfeed-org-cleanup-headlines
                 (rmh-elfeed-org-filter-relevant
                  (rmh-elfeed-org-convert-tree-to-headlines
@@ -297,12 +299,13 @@ Argument LEVEL current level in the tree."
 Argument OPML-FILE filename of the OPML file."
   (interactive "FInput OPML file: ")
   (let* ((xml (xml-parse-file opml-file))
-        (content (rmh-elfeed-org-convert-opml-to-org xml 0)))
+         (content (rmh-elfeed-org-convert-opml-to-org xml 0)))
     (with-current-buffer (get-buffer-create "*Imported Org Feeds*")
       (erase-buffer)
       (insert (format "* Imported Feeds            :%s:\n" rmh-elfeed-org-tree-id))
       (insert content)
-      (org-mode)
+      (let ((org-inhibit-startup t))
+        (org-mode))
       (pop-to-buffer (current-buffer)))))
 
 
@@ -312,7 +315,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
   (let (need-ends
         opml-body)
     (with-current-buffer org-buffer
-      (org-mode)
+      (let ((org-inhibit-startup t))
+        (org-mode))
       (org-element-map (rmh-elfeed-org-import-trees
                         rmh-elfeed-org-tree-id) 'headline
         (lambda (h)
