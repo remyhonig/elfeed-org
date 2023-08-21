@@ -1,4 +1,4 @@
-;;; elfeed-org.el --- Configure elfeed with one or more org-mode files
+;;; elfeed-org.el --- Configure elfeed with one or more org-mode files -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2014  Remy Honig
 
