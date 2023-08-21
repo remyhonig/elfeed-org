@@ -60,7 +60,8 @@
   :type 'bool)
 
 (defcustom rmh-elfeed-org-files (list (locate-user-emacs-file "elfeed.org"))
-  "The files where we look to find trees with the `rmh-elfeed-org-tree-id'."
+  "The files where we look to find trees with the `rmh-elfeed-org-tree-id'.
+In this file paths can be given relative to `org-directory'."
   :group 'elfeed-org
   :type '(repeat (file :tag "org-mode file")))
 
@@ -69,7 +70,7 @@
 
 (defun rmh-elfeed-org-check-configuration-file (file)
   "Make sure FILE exists."
-  (when (not (file-exists-p file))
+  (when (not (file-exists-p (expand-file-name file org-directory)))
     (error "Elfeed-org cannot open %s.  Make sure it exists or customize the variable \'rmh-elfeed-org-files\'"
            (abbreviate-file-name file))))
 
@@ -190,7 +191,8 @@ all.  Which in my opinion makes the process more traceable."
   (cl-remove-duplicates
    (mapcan (lambda (file)
              (let ((org-inhibit-startup t))
-               (with-current-buffer (find-file-noselect (expand-file-name file))
+               (with-current-buffer (find-file-noselect
+                                     (expand-file-name file org-directory))
                  (org-mode)
                  (rmh-elfeed-org-cleanup-headlines
                   (rmh-elfeed-org-filter-relevant
@@ -369,7 +371,8 @@ because most of Feed/RSS readers only support trees of 2 levels deep."
   (interactive)
   (let ((opml-body (cl-loop for org-file in rmh-elfeed-org-files
                              concat (rmh-elfeed-org-convert-org-to-opml
-                                     (find-file-noselect (expand-file-name org-file))))))
+                                     (find-file-noselect (expand-file-name org-file
+                                                                           org-directory))))))
     (with-current-buffer (get-buffer-create "*Exported OPML Feeds*")
       (erase-buffer)
       (insert "<?xml version=\"1.0\"?>\n")
