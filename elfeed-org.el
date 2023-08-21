@@ -240,9 +240,7 @@ all.  Which in my opinion makes the process more traceable."
 
   ;; Convert org structure to elfeed structure and register taggers and subscriptions
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
-         (taggers (rmh-elfeed-org-filter-taggers headlines))
-         (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
-         (elfeed-tagger-hooks (mapcar #'rmh-elfeed-org-export-entry-hook elfeed-taggers)))
+         (taggers (rmh-elfeed-org-filter-taggers headlines)))
     (mapc #'rmh-elfeed-org-export-feed headlines)
     (mapc #'rmh-elfeed-org-export-entry-hook taggers))
 
