@@ -84,21 +84,21 @@ Return t if it does or nil if it does not."
 
 (defun rmh-elfeed-org-mark-feed-ignore (url)
   "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing the feed URL."
-  (dolist (org-file rmh-elfeed-org-files)
-    (with-current-buffer (find-file-noselect
-                          (expand-file-name org-file))
-      (let ((org-inhibit-startup t))
-        (org-mode))
-      (goto-char (point-min))
-      (while (and
-              (search-forward url nil t)
-              ;; Prefer outline-on-heading-p because org-on-heading-p
-              ;; is obsolete but org-at-heading-p was only introduced
-              ;; in org 9.0:
-              (outline-on-heading-p t)
-              (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
-        (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
-      (elfeed-log 'info "elfeed-org tagged '%s' in file '%s' with '%s' to be ignored" url org-file rmh-elfeed-org-ignore-tag))))
+  (let ((org-inhibit-startup t))
+    (dolist (org-file rmh-elfeed-org-files)
+      (with-current-buffer (find-file-noselect
+                            (expand-file-name org-file))
+        (org-mode)
+        (goto-char (point-min))
+        (while (and
+                (search-forward url nil t)
+                ;; Prefer outline-on-heading-p because org-on-heading-p
+                ;; is obsolete but org-at-heading-p was only introduced
+                ;; in org 9.0:
+                (outline-on-heading-p t)
+                (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
+          (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
+        (elfeed-log 'info "elfeed-org tagged '%s' in file '%s' with '%s' to be ignored" url org-file rmh-elfeed-org-ignore-tag)))))
 
 
 (defun rmh-elfeed-org-import-trees (tree-id)
@@ -189,14 +189,14 @@ all.  Which in my opinion makes the process more traceable."
   "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list."
   (cl-remove-duplicates
    (mapcan (lambda (file)
-             (with-current-buffer (find-file-noselect (expand-file-name file))
-               (let ((org-inhibit-startup t))
-                 (org-mode))
-               (rmh-elfeed-org-cleanup-headlines
-                (rmh-elfeed-org-filter-relevant
-                 (rmh-elfeed-org-convert-tree-to-headlines
-                  (rmh-elfeed-org-import-trees tree-id)))
-                (intern tree-id))))
+             (let ((org-inhibit-startup t))
+               (with-current-buffer (find-file-noselect (expand-file-name file))
+                 (org-mode)
+                 (rmh-elfeed-org-cleanup-headlines
+                  (rmh-elfeed-org-filter-relevant
+                   (rmh-elfeed-org-convert-tree-to-headlines
+                    (rmh-elfeed-org-import-trees tree-id)))
+                  (intern tree-id)))))
            files)
    :test #'equal))
 
