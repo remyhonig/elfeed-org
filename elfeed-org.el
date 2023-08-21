@@ -397,12 +397,14 @@ because most of Feed/RSS readers only support trees of 2 levels deep."
   (advice-add #'elfeed :before #'rmh-elfeed-org-process-advice)
   (add-hook 'elfeed-new-entry-hook #'elfeed-org-run-new-entry-hook)
   (advice-add 'elfeed-apply-autotags-now :after #'rmh-elfeed-apply-autotags-now-advice)
-  (add-hook 'elfeed-http-error-hooks (lambda (url status)
-                                       (when rmh-elfeed-org-auto-ignore-invalid-feeds
-                                         (rmh-elfeed-org-mark-feed-ignore url))))
-  (add-hook 'elfeed-parse-error-hooks (lambda (url error)
-                                        (when rmh-elfeed-org-auto-ignore-invalid-feeds
-                                          (rmh-elfeed-org-mark-feed-ignore url)))))
+  (add-hook 'elfeed-http-error-hooks
+            (lambda (url _status)
+              (when rmh-elfeed-org-auto-ignore-invalid-feeds
+                (rmh-elfeed-org-mark-feed-ignore url))))
+  (add-hook 'elfeed-parse-error-hooks
+            (lambda (url _error)
+              (when rmh-elfeed-org-auto-ignore-invalid-feeds
+                (rmh-elfeed-org-mark-feed-ignore url)))))
 
 
 (provide 'elfeed-org)
