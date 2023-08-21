@@ -152,13 +152,13 @@ all.  Which in my opinion makes the process more traceable."
           ;; save current level to compare with next heading that will be visited
           (setq level current-level)
           ;; save the tags that might apply to potential children of the current heading
-          (push (nconc (car tags) delta-tags) tags)
+          (push (append (car tags) delta-tags) tags)
           ;; return the heading and inherited tags
           (if (and link description)
-              (nconc (list link)
+              (append (list link)
                        (car tags)
                        (list description))
-            (nconc (list (if link link heading))
+            (append (list (if link link heading))
                      (car tags))))))))
 
 ;; TODO: mark wrongly formatted feeds (PoC for unretrievable feeds)
