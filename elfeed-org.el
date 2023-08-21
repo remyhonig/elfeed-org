@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014  Remy Honig
 
 ;; Author           : Remy Honig <remyhonig@gmail.com>
-;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (dash "2.10.0") (s "1.9.0") (cl-lib "0.5"))
+;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (cl-lib "0.5"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
 ;; Version          : 20170423.1
 ;; Keywords         : news
@@ -35,8 +35,6 @@
 (require 'elfeed)
 (require 'org)
 (require 'org-element)
-(require 'dash)
-(require 's)
 (require 'cl-lib)
 (require 'xml)
 
@@ -131,8 +129,9 @@ all.  Which in my opinion makes the process more traceable."
         (pcase-let*
             ((current-level (org-element-property :level h))
              (delta-level (- current-level level))
-             (delta-tags (--map (intern (substring-no-properties it))
-                                (org-element-property :tags h)))
+             (delta-tags (mapcar (lambda (tag)
+                                   (intern (substring-no-properties tag)))
+                                 (org-element-property :tags h)))
              (heading (org-element-property :raw-value h))
              (`(,link ,description)
               (org-element-map (org-element-property :title h) 'link
@@ -148,18 +147,18 @@ all.  Which in my opinion makes the process more traceable."
           ;; update the tags stack when we visit a parent or sibling
           (unless (> delta-level 0)
             (let ((drop-num (+ 1 (- delta-level))))
-              (setq tags (-drop drop-num tags))))
+              (setq tags (nthcdr drop-num tags))))
           ;; save current level to compare with next heading that will be visited
           (setq level current-level)
           ;; save the tags that might apply to potential children of the current heading
-          (push (-concat (-first-item tags) delta-tags) tags)
+          (push (nconc (car tags) delta-tags) tags)
           ;; return the heading and inherited tags
           (if (and link description)
-              (-concat (list link)
-                       (-first-item tags)
+              (nconc (list link)
+                       (car tags)
                        (list description))
-            (-concat (list (if link link heading))
-                     (-first-item tags))))))))
+            (nconc (list (if link link heading))
+                     (car tags))))))))
 
 ;; TODO: mark wrongly formatted feeds (PoC for unretrievable feeds)
 (defun rmh-elfeed-org-flag-headlines (parsed-org)
@@ -172,7 +171,7 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun rmh-elfeed-org-filter-relevant (list)
   "Filter relevant entries from the LIST."
-  (-filter
+  (cl-remove-if-not
    (lambda (entry)
      (and
       (string-match "\\(http\\|gopher\\|file\\|entry-title\\)" (car entry))
@@ -187,21 +186,24 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun rmh-elfeed-org-import-headlines-from-files (files tree-id)
   "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list."
-  (-distinct (-mapcat (lambda (file)
-                        (with-current-buffer (find-file-noselect (expand-file-name file))
-                          (org-mode)
-                          (rmh-elfeed-org-cleanup-headlines
-                           (rmh-elfeed-org-filter-relevant
-                            (rmh-elfeed-org-convert-tree-to-headlines
-                             (rmh-elfeed-org-import-trees tree-id)))
-                           (intern tree-id))))
-                      files)))
+  (cl-remove-duplicates
+   (mapcan (lambda (file)
+             (with-current-buffer (find-file-noselect (expand-file-name file))
+               (org-mode)
+               (rmh-elfeed-org-cleanup-headlines
+                (rmh-elfeed-org-filter-relevant
+                 (rmh-elfeed-org-convert-tree-to-headlines
+                  (rmh-elfeed-org-import-trees tree-id)))
+                (intern tree-id))))
+           files)
+   :test #'equal))
 
 
 (defun rmh-elfeed-org-convert-headline-to-tagger-params (tagger-headline)
   "Add new entry hooks for tagging configured with the found headline in TAGGER-HEADLINE."
   (list
-   (s-trim (s-chop-prefix "entry-title:" (car tagger-headline)))
+   (string-clean-whitespace
+    (string-remove-prefix "entry-title:" (car tagger-headline)))
    (cdr tagger-headline)))
 
 
@@ -228,7 +230,7 @@ all.  Which in my opinion makes the process more traceable."
   "Process headlines and taggers from FILES with org headlines with TREE-ID."
 
   ;; Warn if configuration files are missing
-  (-each files 'rmh-elfeed-org-check-configuration-file)
+  (mapc #'rmh-elfeed-org-check-configuration-file files)
 
   ;; Clear elfeed structures
   (setq elfeed-feeds nil)
@@ -237,10 +239,10 @@ all.  Which in my opinion makes the process more traceable."
   ;; Convert org structure to elfeed structure and register taggers and subscriptions
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
          (taggers (rmh-elfeed-org-filter-taggers headlines))
-         (elfeed-taggers (-map 'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
-         (elfeed-tagger-hooks (-map 'rmh-elfeed-org-export-entry-hook elfeed-taggers)))
-    (-each headlines 'rmh-elfeed-org-export-feed)
-    (-each taggers 'rmh-elfeed-org-export-entry-hook))
+         (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
+         (elfeed-tagger-hooks (mapcar #'rmh-elfeed-org-export-entry-hook elfeed-taggers)))
+    (mapc #'rmh-elfeed-org-export-feed headlines)
+    (mapc #'rmh-elfeed-org-export-entry-hook taggers))
 
   ;; Tell user what we did
   (elfeed-log 'info "elfeed-org loaded %i feeds, %i rules"
@@ -249,8 +251,8 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun elfeed-org-run-new-entry-hook (entry)
   "Run ENTRY through elfeed-org taggers."
-  (--each elfeed-org-new-entry-hook
-    (funcall it entry)))
+  (dolist (hook elfeed-new-entry-hook)
+    (funcall hook entry)))
 
 (defun rmh-elfeed-apply-autotags-now-advice ()
   "Make entry title matching rules works with `elfeed-apply-autotags-now'."
@@ -259,21 +261,24 @@ all.  Which in my opinion makes the process more traceable."
                      rmh-elfeed-org-files rmh-elfeed-org-tree-id))
          (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
          (taggers (rmh-elfeed-org-filter-taggers headlines))
-         (elfeed-taggers (-map 'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
-         (entry-match-taggers (-map (lambda (tagger-params)
-                                      (elfeed-make-tagger
-                                       :entry-title (nth 0 tagger-params)
-                                       :add (nth 1 tagger-params))) elfeed-taggers)))
+         (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params taggers))
+         (entry-match-taggers (mapcar (lambda (tagger-params)
+                                        (elfeed-make-tagger
+                                         :entry-title (nth 0 tagger-params)
+                                         :add (nth 1 tagger-params)))
+                                      elfeed-taggers)))
     (with-elfeed-db-visit (entry feed)
                           (dolist (tagger entry-match-taggers)
                             (funcall tagger entry)))))
 
 (defun rmh-elfeed-org-filter-taggers (headlines)
   "Filter tagging rules from the HEADLINES in the tree."
-  (-non-nil (-map
-             (lambda (headline)
-               (when (s-starts-with? "entry-title" (car headline)) headline))
-             headlines)))
+  (cl-remove-if-not #'identity
+                    (mapcar
+                     (lambda (headline)
+                       (when (string-prefix-p "entry-title" (car headline))
+                         headline))
+                     headlines)))
 
 (defun rmh-elfeed-org-convert-opml-to-org (xml level)
   "Convert OPML content to Org format.
@@ -314,8 +319,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
           (let* ((current-level (org-element-property :level h))
                  (tags (org-element-property :tags h))
                  (heading (org-element-property :raw-value h))
-                 (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading))
-                 (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading))
+                 (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading t))
+                 (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading t))
                  url
                  title
                  opml-outline)
@@ -325,7 +330,7 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
                 (setq opml-body (concat opml-body (format "  %s</outline>\n"
                                                           (make-string (* 2 level) ? ))))))
 
-            (cond ((s-starts-with? "http" heading)
+            (cond ((string-prefix-p "http" heading)
                    (setq url heading)
                    (setq title (or (elfeed-feed-title (elfeed-db-get-feed heading)) "Unknown")))
                   (link-and-title (setq url (nth 1 link-and-title))
@@ -338,7 +343,7 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
                                            (make-string (* 2 current-level) ? )
                                            (xml-escape-string title)
                                            (xml-escape-string url)))
-              (unless (s-starts-with? "entry-title" heading)
+              (unless (string-prefix-p "entry-title" heading)
                 (unless (member rmh-elfeed-org-tree-id tags)
                   ;; insert category title only when it is neither the top
                   ;; level elfeed node nor the entry-title node
