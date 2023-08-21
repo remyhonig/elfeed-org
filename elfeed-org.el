@@ -387,16 +387,16 @@ because most of Feed/RSS readers only support trees of 2 levels deep."
       (xml-mode)
       (pop-to-buffer (current-buffer)))))
 
+(defun rmh-elfeed-org-process-advice ()
+  "Advice to add to `elfeed' to load the configuration before it is run."
+  (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
 
 ;;;###autoload
 (defun elfeed-org ()
   "Hook up rmh-elfeed-org to read the `org-mode' configuration when elfeed is run."
   (interactive)
   (elfeed-log 'info "elfeed-org is set up to handle elfeed configuration")
-  ;; Use an advice to load the configuration.
-  (defadvice elfeed (before configure-elfeed activate)
-    "Load all feed settings before elfeed is started."
-    (rmh-elfeed-org-process rmh-elfeed-org-files rmh-elfeed-org-tree-id))
+  (advice-add #'elfeed :before #'rmh-elfeed-org-process-advice)
   (add-hook 'elfeed-new-entry-hook #'elfeed-org-run-new-entry-hook)
   (advice-add 'elfeed-apply-autotags-now :after #'rmh-elfeed-apply-autotags-now-advice)
   (add-hook 'elfeed-http-error-hooks (lambda (url status)
