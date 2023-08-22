@@ -256,7 +256,7 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun elfeed-org-run-new-entry-hook (entry)
   "Run ENTRY through elfeed-org taggers."
-  (dolist (hook elfeed-new-entry-hook)
+  (dolist (hook elfeed-org-new-entry-hook)
     (funcall hook entry)))
 
 (defun rmh-elfeed-apply-autotags-now-advice ()
