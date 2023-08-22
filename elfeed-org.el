@@ -242,9 +242,12 @@ all.  Which in my opinion makes the process more traceable."
 
   ;; Convert org structure to elfeed structure and register taggers and subscriptions
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
-         (taggers (rmh-elfeed-org-filter-taggers headlines)))
-    (mapc #'rmh-elfeed-org-export-feed headlines)
-    (mapc #'rmh-elfeed-org-export-entry-hook taggers))
+         (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
+         (taggers (rmh-elfeed-org-filter-taggers headlines))
+         (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params
+                                 (rmh-elfeed-org-filter-taggers headlines))))
+    (mapc #'rmh-elfeed-org-export-feed subscriptions)
+    (mapc #'rmh-elfeed-org-export-entry-hook elfeed-taggers))
 
   ;; Tell user what we did
   (elfeed-log 'info "elfeed-org loaded %i feeds, %i rules"
@@ -280,6 +283,20 @@ all.  Which in my opinion makes the process more traceable."
                        (when (string-prefix-p "entry-title" (car headline))
                          headline))
                      headlines)))
+
+(defun rmh-elfeed-org-filter-subscriptions (headlines)
+  "Filter subscriptions to rss feeds from the HEADLINES in the tree."
+  (-non-nil (-map
+             (lambda (headline)
+               (let* ((text (car headline))
+                      (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
+                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                 (cond ((s-starts-with? "http" text) headline)
+                       (link-and-title (-concat (list (nth 1 hyperlink))
+                                                (cdr headline)
+                                                (list (nth 2 link-and-title))))
+                       (hyperlink (-concat (list (nth 1 hyperlink)) (cdr headline))))))
+             headlines)))
 
 (defun rmh-elfeed-org-convert-opml-to-org (xml level)
   "Convert OPML content to Org format.
