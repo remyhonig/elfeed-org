@@ -289,9 +289,9 @@ all.  Which in my opinion makes the process more traceable."
   (-non-nil (-map
              (lambda (headline)
                (let* ((text (car headline))
-                      (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
-                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
-                 (cond ((s-starts-with? "http" text) headline)
+                      (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
+                      (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                 (cond ((string-prefix-p "http" text) headline)
                        (link-and-title (-concat (list (nth 1 hyperlink))
                                                 (cdr headline)
                                                 (list (nth 2 link-and-title))))
