@@ -286,17 +286,18 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun rmh-elfeed-org-filter-subscriptions (headlines)
   "Filter subscriptions to rss feeds from the HEADLINES in the tree."
-  (-non-nil (-map
-             (lambda (headline)
-               (let* ((text (car headline))
-                      (link-and-title (s-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
-                      (hyperlink (s-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
-                 (cond ((s-starts-with? "http" text) headline)
-                       (link-and-title (-concat (list (nth 1 hyperlink))
-                                                (cdr headline)
-                                                (list (nth 2 link-and-title))))
-                       (hyperlink (-concat (list (nth 1 hyperlink)) (cdr headline))))))
-             headlines)))
+  (cl-remove-if-not #'identity
+                    (mapcar
+                     (lambda (headline)
+                       (let* ((text (car headline))
+                              (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
+                              (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                         (cond ((string-prefix-p "http" text) headline)
+                               (link-and-title (append (list (nth 1 hyperlink))
+                                                        (cdr headline)
+                                                        (list (nth 2 link-and-title))))
+                               (hyperlink (append (list (nth 1 hyperlink)) (cdr headline))))))
+                     headlines)))
 
 (defun rmh-elfeed-org-convert-opml-to-org (xml level)
   "Convert OPML content to Org format.
