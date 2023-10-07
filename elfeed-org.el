@@ -176,7 +176,7 @@ all.  Which in my opinion makes the process more traceable."
   (cl-remove-if-not
    (lambda (entry)
      (and
-      (string-match "\\(http\\|gopher\\|file\\|entry-title\\)" (car entry))
+      (string-match-p "\\(http\\|gopher\\|file\\|entry-title\\)" (car entry))
       (not (member (intern rmh-elfeed-org-ignore-tag) entry))))
    list))
 
@@ -290,8 +290,13 @@ all.  Which in my opinion makes the process more traceable."
                     (mapcar
                      (lambda (headline)
                        (let* ((text (car headline))
-                              (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
-                              (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                              (link-and-title (and (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading)
+                                                   (list (match-string-no-properties 0 heading)
+                                                         (match-string-no-properties 1 heading)
+                                                         (match-string-no-properties 2 heading))))
+                              (hyperlink (and (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading)
+                                              (list (match-string-no-properties 0 heading)
+                                                    (match-string-no-properties 1 heading)))))
                          (cond ((string-prefix-p "http" text) headline)
                                (link-and-title (append (list (nth 1 hyperlink))
                                                         (cdr headline)
@@ -341,8 +346,13 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
           (let* ((current-level (org-element-property :level h))
                  (tags (org-element-property :tags h))
                  (heading (org-element-property :raw-value h))
-                 (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading t))
-                 (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading t))
+                 (link-and-title (and (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading)
+                                      (list (match-string-no-properties 0 heading)
+                                            (match-string-no-properties 1 heading)
+                                            (match-string-no-properties 2 heading))))
+                 (hyperlink (and (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading)
+                                 (list (match-string-no-properties 0 heading)
+                                       (match-string-no-properties 1 heading))))
                  url
                  title
                  opml-outline)
