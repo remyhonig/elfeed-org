@@ -85,21 +85,19 @@ Return t if it does or nil if it does not."
 
 (defun rmh-elfeed-org-mark-feed-ignore (url)
   "Set tag `rmh-elfeed-org-ignore-tag' to headlines containing the feed URL."
-  (let ((org-inhibit-startup t))
-    (dolist (org-file rmh-elfeed-org-files)
-      (with-current-buffer (find-file-noselect
-                            (expand-file-name org-file))
-        (org-mode)
-        (goto-char (point-min))
-        (while (and
-                (search-forward url nil t)
-                ;; Prefer outline-on-heading-p because org-on-heading-p
-                ;; is obsolete but org-at-heading-p was only introduced
-                ;; in org 9.0:
-                (outline-on-heading-p t)
-                (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
-          (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
-        (elfeed-log 'info "elfeed-org tagged '%s' in file '%s' with '%s' to be ignored" url org-file rmh-elfeed-org-ignore-tag)))))
+  (dolist (org-file rmh-elfeed-org-files)
+    (with-temp-buffer
+      (insert-file-contents org-file)
+      (let ((org-inhibit-startup t)
+            (org-mode-hook nil))
+        (org-mode))
+      (goto-char (point-min))
+      (while (and
+              (search-forward url nil t)
+              (org-at-heading-p t)
+              (rmh-elfeed-org-is-headline-contained-in-elfeed-tree))
+        (org-toggle-tag rmh-elfeed-org-ignore-tag 'on))
+      (elfeed-log 'info "elfeed-org tagged '%s' in file '%s' with '%s' to be ignored" url org-file rmh-elfeed-org-ignore-tag))))
 
 
 (defun rmh-elfeed-org-import-trees (tree-id)
@@ -176,7 +174,7 @@ all.  Which in my opinion makes the process more traceable."
   (cl-remove-if-not
    (lambda (entry)
      (and
-      (string-match "\\(http\\|gopher\\|file\\|entry-title\\)" (car entry))
+      (string-match-p "\\(http\\|gopher\\|file\\|entry-title\\)" (car entry))
       (not (member (intern rmh-elfeed-org-ignore-tag) entry))))
    list))
 
@@ -190,15 +188,16 @@ all.  Which in my opinion makes the process more traceable."
   "Visit all FILES and return the headlines stored under tree tagged TREE-ID or with the \":ID:\" TREE-ID in one list."
   (cl-remove-duplicates
    (mapcan (lambda (file)
-             (let ((org-inhibit-startup t))
-               (with-current-buffer (find-file-noselect
-                                     (expand-file-name file org-directory))
-                 (org-mode)
-                 (rmh-elfeed-org-cleanup-headlines
-                  (rmh-elfeed-org-filter-relevant
-                   (rmh-elfeed-org-convert-tree-to-headlines
-                    (rmh-elfeed-org-import-trees tree-id)))
-                  (intern tree-id)))))
+             (with-temp-buffer
+               (insert-file-contents (expand-file-name file org-directory))
+               (let ((org-inhibit-startup t)
+                     (org-mode-hook nil))
+                 (org-mode))
+               (rmh-elfeed-org-cleanup-headlines
+                (rmh-elfeed-org-filter-relevant
+                 (rmh-elfeed-org-convert-tree-to-headlines
+                  (rmh-elfeed-org-import-trees tree-id)))
+                (intern tree-id))))
            files)
    :test #'equal))
 
@@ -290,8 +289,13 @@ all.  Which in my opinion makes the process more traceable."
                     (mapcar
                      (lambda (headline)
                        (let* ((text (car headline))
-                              (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text))
-                              (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)))
+                              (link-and-title (and (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text)
+                                                   (list (match-string-no-properties 0 text)
+                                                         (match-string-no-properties 1 text)
+                                                         (match-string-no-properties 2 text))))
+                              (hyperlink (and (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)
+                                              (list (match-string-no-properties 0 text)
+                                                    (match-string-no-properties 1 text)))))
                          (cond ((string-prefix-p "http" text) headline)
                                (link-and-title (append (list (nth 1 hyperlink))
                                                         (cdr headline)
@@ -333,7 +337,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
   (let (need-ends
         opml-body)
     (with-current-buffer org-buffer
-      (let ((org-inhibit-startup t))
+      (let ((org-inhibit-startup t)
+            (org-mode-hook nil))
         (org-mode))
       (org-element-map (rmh-elfeed-org-import-trees
                         rmh-elfeed-org-tree-id) 'headline
@@ -341,8 +346,13 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
           (let* ((current-level (org-element-property :level h))
                  (tags (org-element-property :tags h))
                  (heading (org-element-property :raw-value h))
-                 (link-and-title (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading t))
-                 (hyperlink (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading t))
+                 (link-and-title (and (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" heading)
+                                      (list (match-string-no-properties 0 heading)
+                                            (match-string-no-properties 1 heading)
+                                            (match-string-no-properties 2 heading))))
+                 (hyperlink (and (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" heading)
+                                 (list (match-string-no-properties 0 heading)
+                                       (match-string-no-properties 1 heading))))
                  url
                  title
                  opml-outline)
@@ -389,9 +399,12 @@ The first level elfeed node will be ignored. The user may need edit the output
 because most of Feed/RSS readers only support trees of 2 levels deep."
   (interactive)
   (let ((opml-body (cl-loop for org-file in rmh-elfeed-org-files
-                             concat (rmh-elfeed-org-convert-org-to-opml
-                                     (find-file-noselect (expand-file-name org-file
-                                                                           org-directory))))))
+                             concat
+                             (with-temp-buffer
+                               (insert-file-contents
+                                (expand-file-name org-file org-directory))
+                               (rmh-elfeed-org-convert-org-to-opml
+                                (current-buffer))))))
     (with-current-buffer (get-buffer-create "*Exported OPML Feeds*")
       (erase-buffer)
       (insert "<?xml version=\"1.0\"?>\n")
