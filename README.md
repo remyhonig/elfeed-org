@@ -54,7 +54,7 @@ and every feed.
          The text will be ignored by elfeed.
     **** http://feeds.feedburner.com/eclipselive                         :ignore:
     **** http://www.fosslc.org/drupal/rss.xml                             :video:
-    #+link toobnix https://toobnix.org/feeds/videos.xml?videoChannelId=
+    #+link: toobnix https://toobnix.org/feeds/videos.xml?videoChannelId=
 
 
 Some highlights:
