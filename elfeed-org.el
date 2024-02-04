@@ -89,7 +89,9 @@ Return t if it does or nil if it does not."
     (with-temp-buffer
       (insert-file-contents org-file)
       (let ((org-inhibit-startup t)
-            (org-mode-hook nil))
+            (org-mode-hook nil)
+            (after-change-major-mode-hook nil)
+            (change-major-mode-after-body-hook nil))
         (org-mode))
       (goto-char (point-min))
       (while (and
@@ -191,7 +193,9 @@ all.  Which in my opinion makes the process more traceable."
              (with-temp-buffer
                (insert-file-contents (expand-file-name file org-directory))
                (let ((org-inhibit-startup t)
-                     (org-mode-hook nil))
+                     (org-mode-hook nil)
+                     (after-change-major-mode-hook nil)
+                     (change-major-mode-after-body-hook nil))
                  (org-mode))
                (rmh-elfeed-org-cleanup-headlines
                 (rmh-elfeed-org-filter-relevant
@@ -326,7 +330,10 @@ Argument OPML-FILE filename of the OPML file."
       (erase-buffer)
       (insert (format "* Imported Feeds            :%s:\n" rmh-elfeed-org-tree-id))
       (insert content)
-      (let ((org-inhibit-startup t))
+      (let ((org-inhibit-startup t)
+            (org-mode-hook nil)
+            (after-change-major-mode-hook nil)
+            (change-major-mode-after-body-hook nil))
         (org-mode))
       (pop-to-buffer (current-buffer)))))
 
@@ -338,7 +345,9 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
         opml-body)
     (with-current-buffer org-buffer
       (let ((org-inhibit-startup t)
-            (org-mode-hook nil))
+            (org-mode-hook nil)
+            (after-change-major-mode-hook nil)
+            (change-major-mode-after-body-hook nil))
         (org-mode))
       (org-element-map (rmh-elfeed-org-import-trees
                         rmh-elfeed-org-tree-id) 'headline
