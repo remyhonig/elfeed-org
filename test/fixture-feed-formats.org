@@ -6,6 +6,10 @@
 ** entry-title: \(linux\|gnome\)
 ** entry-title: \(apple\)
 ** http://url                                                                       :tag1:
+** [[gopher://link]]
+** [[file:///tmp/unnamedfilefeed]]
+** [[file:///tmp/namedfilefeed][namedfilefeed]]
+** file:///tmp/feed
 ** [[http://namedorgmodelink][namedorgmodelink]]
 ** [[http://unnamedorgmodelink]]
 ** [[abbrv:link][abbreviatedlink]]

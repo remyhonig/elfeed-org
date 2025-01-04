@@ -244,8 +244,7 @@ all.  Which in my opinion makes the process more traceable."
   (let* ((headlines (rmh-elfeed-org-import-headlines-from-files files tree-id))
          (subscriptions (rmh-elfeed-org-filter-subscriptions headlines))
          (taggers (rmh-elfeed-org-filter-taggers headlines))
-         (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params
-                                 (rmh-elfeed-org-filter-taggers headlines))))
+         (elfeed-taggers (mapcar #'rmh-elfeed-org-convert-headline-to-tagger-params taggers)))
     (mapc #'rmh-elfeed-org-export-feed subscriptions)
     (mapc #'rmh-elfeed-org-export-entry-hook elfeed-taggers))
 
@@ -277,33 +276,13 @@ all.  Which in my opinion makes the process more traceable."
 
 (defun rmh-elfeed-org-filter-taggers (headlines)
   "Filter tagging rules from the HEADLINES in the tree."
-  (cl-remove-if-not #'identity
-                    (mapcar
-                     (lambda (headline)
-                       (when (string-prefix-p "entry-title" (car headline))
-                         headline))
-                     headlines)))
+  (cl-remove-if-not (lambda (headline) (string-prefix-p "entry-title" (car headline)))
+                    headlines))
 
 (defun rmh-elfeed-org-filter-subscriptions (headlines)
   "Filter subscriptions to rss feeds from the HEADLINES in the tree."
-  (cl-remove-if-not #'identity
-                    (mapcar
-                     (lambda (headline)
-                       (let* ((text (car headline))
-                              (link-and-title (and (string-match "^\\[\\[\\(http.+?\\)\\]\\[\\(.+?\\)\\]\\]" text)
-                                                   (list (match-string-no-properties 0 text)
-                                                         (match-string-no-properties 1 text)
-                                                         (match-string-no-properties 2 text))))
-                              (hyperlink (and (string-match "^\\[\\[\\(http.+?\\)\\]\\(?:\\[.+?\\]\\)?\\]" text)
-                                              (list (match-string-no-properties 0 text)
-                                                    (match-string-no-properties 1 text)))))
-                         (cond ((string-prefix-p "http" text) headline)
-                               (link-and-title (append (list (nth 1 hyperlink))
-                                                        (cdr headline)
-                                                        (list (nth 2 link-and-title))))
-                               (hyperlink (append (list (nth 1 hyperlink)) (cdr headline))))))
-                     headlines)))
-
+  (cl-remove-if (lambda (headline) (string-prefix-p "entry-title" (car headline)))
+                headlines))
 
 (defun rmh-elfeed-org-convert-opml-to-org (xml level)
   "Convert OPML content to Org format.
