@@ -6,8 +6,6 @@
 (files "elfeed-org*.el")
 
 (depends-on "elfeed")
-(depends-on "dash")
-(depends-on "s")
 (depends-on "org")
 
 (development

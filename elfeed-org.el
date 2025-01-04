@@ -3,7 +3,7 @@
 ;; Copyright (C) 2014  Remy Honig
 
 ;; Author           : Remy Honig <remyhonig@gmail.com>
-;; Package-Requires : ((elfeed "1.1.1") (org "8.2.7") (cl-lib "0.5"))
+;; Package-Requires : ((emacs "28.1") (elfeed "1.1.1") (org "8.2.7"))
 ;; URL              : https://github.com/remyhonig/elfeed-org
 ;; Version          : 20170423.1
 ;; Keywords         : news
@@ -321,7 +321,8 @@ Argument ORG-BUFFER the buffer to write the OPML content to."
             (org-mode-hook nil))
         (org-mode))
       (org-element-map (rmh-elfeed-org-import-trees
-                        rmh-elfeed-org-tree-id) 'headline
+                        rmh-elfeed-org-tree-id)
+          'headline
         (lambda (h)
           (let* ((current-level (org-element-property :level h))
                  (tags (org-element-property :tags h))
