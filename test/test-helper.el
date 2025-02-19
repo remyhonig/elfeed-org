@@ -3,6 +3,7 @@
 (require 'xtest)
 (load-file "elfeed-org.el")
 (setq org-tags-column 0)
+(setq org-directory nil)
 
 ;;; Code:
 
