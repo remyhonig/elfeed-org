@@ -68,7 +68,7 @@ Some highlights:
 
 ## Import/Export OPML
 
-Use `elfeed-org-export-opml` to export the tree structure of feeds to OPML format to a temporary buffer. This will allow you to make edits before saving it. You will probabably want to do this because most readers don't allow more than 2 levels while elfeed-org has no limit.
+Use `elfeed-org-export-opml` to export the tree structure of feeds to OPML format to a temporary buffer. This will allow you to make edits before saving it. You will probably want to do this because most readers don't allow more than 2 levels while elfeed-org has no limit.
 
 Use `elfeed-org-import-opml` to import an OPML file to an elfeed-org structured tree.
 
