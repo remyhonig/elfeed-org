@@ -112,7 +112,8 @@ current users."
       'headline
     (lambda (h)
       (when (or (member tree-id (org-element-property :tags h))
-                (equal tree-id (org-element-property :ID h))) h))))
+                (equal tree-id (org-element-property :ID h))
+                (equal tree-id (org-element-property :STYLE h))) h))))
 
 
 (defun rmh-elfeed-org-convert-tree-to-headlines (parsed-org)
